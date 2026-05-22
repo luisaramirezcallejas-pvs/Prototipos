@@ -1,0 +1,1136 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>PVS · App Comercios — Operador</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --pvs: #0033CC;
+  --pvs-dark: #002299;
+  --pvs-mid: #1a4dd9;
+  --pvs-light: #E6EDFF;
+  --pvs-xlight: #F0F4FF;
+  --white: #ffffff;
+  --gray-50: #F7F8FA;
+  --gray-100: #EEF0F4;
+  --gray-200: #DDE1E9;
+  --gray-300: #C4CAD6;
+  --gray-400: #9AA3B2;
+  --gray-500: #6B7280;
+  --gray-700: #374151;
+  --gray-900: #111827;
+  --green: #059669;
+  --green-l: #ECFDF5;
+  --amber: #D97706;
+  --amber-l: #FFFBEB;
+  --red: #DC2626;
+  --red-l: #FEF2F2;
+  --font: 'DM Sans', sans-serif;
+  --r: 14px;
+  --r-sm: 8px;
+  --r-full: 999px;
+  --shadow: 0 2px 12px rgba(0,51,204,0.12), 0 1px 3px rgba(0,0,0,0.06);
+  --shadow-lg: 0 8px 32px rgba(0,0,0,0.14), 0 2px 8px rgba(0,0,0,0.06);
+}
+
+html, body {
+  height: 100%; background: #E8ECF4;
+  font-family: var(--font); font-size: 14px;
+  display: flex; align-items: center; justify-content: center;
+  min-height: 100vh;
+}
+
+/* ── PHONE FRAME ── */
+.phone-wrap {
+  display: flex; flex-direction: column; align-items: center; gap: 16px;
+}
+.phone-label {
+  font-size: 11px; font-weight: 500; color: #94a3b8;
+  text-transform: uppercase; letter-spacing: 0.1em;
+}
+.phone {
+  width: 375px; height: 812px;
+  background: white; border-radius: 44px;
+  box-shadow: 0 24px 80px rgba(0,0,0,0.18), 0 4px 16px rgba(0,0,0,0.1),
+              inset 0 0 0 1.5px rgba(0,0,0,0.12);
+  position: relative; overflow: hidden;
+  display: flex; flex-direction: column;
+}
+
+/* STATUS BAR */
+.status-bar {
+  height: 44px; display: flex; align-items: flex-end;
+  padding: 0 24px 8px; justify-content: space-between;
+  flex-shrink: 0; z-index: 10; position: relative;
+}
+.status-bar.dark { background: var(--pvs); }
+.status-bar.light { background: white; }
+.status-bar.transparent-dark { background: transparent; }
+.status-time { font-size: 13px; font-weight: 600; }
+.status-time.white { color: white; }
+.status-time.dark { color: var(--gray-900); }
+.status-icons { display: flex; gap: 5px; align-items: center; }
+.status-bar-notch {
+  position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+  width: 120px; height: 30px; background: #111; border-radius: 0 0 20px 20px; z-index: 20;
+}
+
+/* SCREENS */
+.screen {
+  flex: 1; display: flex; flex-direction: column;
+  position: absolute; inset: 0; transition: transform 0.35s cubic-bezier(0.4,0,0.2,1), opacity 0.35s;
+  background: white; overflow: hidden;
+}
+.screen.hidden { transform: translateX(100%); opacity: 0; pointer-events: none; }
+.screen.hidden-up { transform: translateY(20px); opacity: 0; pointer-events: none; }
+.screen.hidden-back { transform: translateX(-30%); opacity: 0; pointer-events: none; }
+
+/* ─── SCREEN 3: HOME ─── */
+#s-home { background: var(--gray-50); }
+.home-header {
+  background: var(--pvs); padding: 14px 20px 20px;
+  position: relative; overflow: hidden; flex-shrink: 0;
+}
+.home-header-bg {
+  position: absolute; width: 220px; height: 220px; border-radius: 50%;
+  background: rgba(255,255,255,0.05); top: -60px; right: -50px;
+}
+.home-top {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 18px; position: relative; z-index: 1;
+}
+.home-greeting { }
+.home-hi { color: rgba(255,255,255,0.7); font-size: 12px; }
+.home-name { color: white; font-size: 16px; font-weight: 600; }
+.home-topright { display: flex; gap: 8px; }
+.home-icon-btn {
+  width: 34px; height: 34px; border-radius: 50%;
+  background: rgba(255,255,255,0.15); border: none; cursor: pointer;
+  display: flex; align-items: center; justify-content: center; color: white;
+}
+.home-notif-dot {
+  position: relative;
+}
+.home-notif-dot::after {
+  content: ''; position: absolute; top: 4px; right: 4px;
+  width: 7px; height: 7px; border-radius: 50%; background: #FF4444;
+  border: 1.5px solid var(--pvs);
+}
+
+.saldo-card {
+  background: rgba(255,255,255,0.12); border-radius: 14px;
+  padding: 14px 16px; position: relative; z-index: 1;
+}
+.saldo-label { color: rgba(255,255,255,0.65); font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.06em; }
+.saldo-amount { color: white; font-size: 26px; font-weight: 700; margin: 3px 0; font-variant-numeric: tabular-nums; }
+.saldo-cvu { color: rgba(255,255,255,0.5); font-size: 10px; }
+.saldo-meta { display: flex; justify-content: space-between; align-items: flex-end; }
+.saldo-limite { text-align: right; }
+.saldo-limite-val { color: rgba(255,255,255,0.7); font-size: 12px; font-weight: 500; }
+.saldo-limite-label { color: rgba(255,255,255,0.45); font-size: 10px; }
+.saldo-bar-wrap { margin-top: 10px; }
+.saldo-bar-track { height: 3px; background: rgba(255,255,255,0.15); border-radius: 2px; }
+.saldo-bar-fill { height: 100%; background: rgba(255,255,255,0.7); border-radius: 2px; width: 37%; }
+
+/* ACCIONES */
+.acciones-grid {
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  gap: 6px; padding: 18px 16px 0;
+}
+.accion-btn {
+  display: flex; flex-direction: column; align-items: center; gap: 6px;
+  background: none; border: none; cursor: pointer; padding: 10px 4px;
+  border-radius: 10px; transition: background 0.15s;
+}
+.accion-btn:active { background: var(--gray-100); }
+.accion-icon {
+  width: 44px; height: 44px; border-radius: 12px;
+  background: var(--pvs-light); display: flex; align-items: center; justify-content: center;
+}
+.accion-icon.highlight { background: var(--pvs); }
+.accion-label { font-size: 10px; color: var(--gray-500); font-weight: 500; text-align: center; line-height: 1.2; }
+
+/* HOME BODY */
+.home-body { flex: 1; overflow-y: auto; padding: 0 16px 100px; }
+.home-section-title {
+  font-size: 13px; font-weight: 600; color: var(--gray-900);
+  padding: 16px 0 8px; display: flex; align-items: center; justify-content: space-between;
+}
+.home-section-link { font-size: 11px; color: var(--pvs); font-weight: 500; background: none; border: none; cursor: pointer; }
+
+/* ACTIVIDAD */
+.activity-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 14px; background: white; border-radius: 12px;
+  margin-bottom: 6px; border: 1px solid var(--gray-100);
+  cursor: pointer; transition: box-shadow 0.15s;
+}
+.activity-item:active { box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+.activity-icon-wrap {
+  width: 36px; height: 36px; border-radius: 10px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center; font-size: 16px;
+}
+.activity-info { flex: 1; min-width: 0; }
+.activity-name { font-size: 13px; font-weight: 500; color: var(--gray-900); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.activity-date { font-size: 11px; color: var(--gray-400); }
+.activity-right { text-align: right; flex-shrink: 0; }
+.activity-amount { font-size: 13px; font-weight: 600; color: var(--gray-900); }
+.activity-badge {
+  display: inline-flex; align-items: center; gap: 3px;
+  font-size: 10px; font-weight: 500; padding: 2px 6px; border-radius: 20px; margin-top: 2px;
+}
+.ab-green { background: var(--green-l); color: var(--green); }
+.ab-amber { background: var(--amber-l); color: var(--amber); }
+.ab-red { background: var(--red-l); color: var(--red); }
+
+/* PENDIENTES BANNER */
+.pendientes-banner {
+  background: var(--amber-l); border: 1px solid #FDE68A;
+  border-radius: 12px; padding: 12px 14px;
+  display: flex; align-items: center; gap: 10px;
+  margin-bottom: 0; cursor: pointer;
+}
+.pendientes-banner:active { background: #FEF3C7; }
+.pb-icon { font-size: 20px; }
+.pb-text { flex: 1; }
+.pb-title { font-size: 12px; font-weight: 600; color: #92400E; }
+.pb-sub { font-size: 11px; color: #A16207; }
+.pb-arrow { color: #D97706; }
+
+/* BOTTOM NAV */
+.bottom-nav {
+  position: absolute; bottom: 0; left: 0; right: 0;
+  height: 82px; background: white;
+  border-top: 1px solid var(--gray-100);
+  display: flex; align-items: flex-start; justify-content: space-around;
+  padding-top: 10px; z-index: 50;
+}
+.bn-item {
+  display: flex; flex-direction: column; align-items: center; gap: 3px;
+  flex: 1; background: none; border: none; cursor: pointer;
+  padding: 0; transition: all 0.15s;
+}
+.bn-icon-wrap { width: 42px; height: 28px; display: flex; align-items: center; justify-content: center; border-radius: 14px; transition: background 0.15s; }
+.bn-item.active .bn-icon-wrap { background: var(--pvs-light); }
+.bn-label { font-size: 10px; font-weight: 500; color: var(--gray-400); font-family: var(--font); }
+.bn-item.active .bn-label { color: var(--pvs); }
+
+/* ─── SCREEN 4: PAGAR QR ─── */
+#s-qr { background: #111; }
+.qr-header {
+  display: flex; align-items: center; gap: 12px;
+  padding: 8px 16px 12px; position: relative; z-index: 5;
+}
+.qr-back {
+  width: 32px; height: 32px; border-radius: 50%;
+  background: rgba(255,255,255,0.15); border: none; cursor: pointer;
+  display: flex; align-items: center; justify-content: center; color: white;
+}
+.qr-title { color: white; font-size: 15px; font-weight: 600; }
+.qr-viewfinder {
+  flex: 1; position: relative; display: flex; align-items: center; justify-content: center;
+  overflow: hidden;
+}
+.qr-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.55); }
+.qr-cutout {
+  position: absolute; width: 220px; height: 220px;
+  background: transparent; border-radius: 20px;
+  box-shadow: 0 0 0 9999px rgba(0,0,0,0.55);
+}
+.qr-corner {
+  position: absolute; width: 28px; height: 28px;
+  border-color: white; border-style: solid;
+}
+.qr-corner.tl { top: 0; left: 0; border-width: 3px 0 0 3px; border-radius: 6px 0 0 0; }
+.qr-corner.tr { top: 0; right: 0; border-width: 3px 3px 0 0; border-radius: 0 6px 0 0; }
+.qr-corner.bl { bottom: 0; left: 0; border-width: 0 0 3px 3px; border-radius: 0 0 0 6px; }
+.qr-corner.br { bottom: 0; right: 0; border-width: 0 3px 3px 0; border-radius: 0 0 6px 0; }
+.qr-scan-line {
+  position: absolute; left: 0; right: 0; height: 2px;
+  background: linear-gradient(90deg, transparent, var(--pvs), transparent);
+  animation: scanLine 2s linear infinite;
+}
+@keyframes scanLine { 0% { top: 0; } 100% { top: 100%; } }
+.qr-grid-bg {
+  position: absolute; inset: 0;
+  background-image: repeating-linear-gradient(0deg, rgba(255,255,255,0.02) 0px, rgba(255,255,255,0.02) 1px, transparent 1px, transparent 30px),
+  repeating-linear-gradient(90deg, rgba(255,255,255,0.02) 0px, rgba(255,255,255,0.02) 1px, transparent 1px, transparent 30px);
+}
+.qr-hint { color: rgba(255,255,255,0.7); font-size: 12px; text-align: center; padding: 14px 24px; }
+.qr-galeria {
+  background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 10px; padding: 10px 14px; margin: 0 20px 16px;
+  display: flex; align-items: center; gap: 8px;
+  color: white; font-size: 12px; cursor: pointer; border-top: none;
+}
+
+/* ─── SCREEN 5: CONFIRMAR PAGO ─── */
+#s-confirmar { background: white; }
+.confirm-header {
+  background: var(--pvs); padding: 12px 16px 20px;
+  display: flex; align-items: center; gap: 10px; flex-shrink: 0;
+}
+.confirm-back { width: 32px; height: 32px; border-radius: 50%; background: rgba(255,255,255,0.15); border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; color: white; }
+.confirm-title { color: white; font-size: 15px; font-weight: 600; }
+.confirm-body { flex: 1; padding: 24px 20px; display: flex; flex-direction: column; }
+.confirm-merchant {
+  text-align: center; margin-bottom: 24px;
+}
+.merchant-icon {
+  width: 60px; height: 60px; border-radius: 16px;
+  background: var(--pvs-light); display: flex; align-items: center; justify-content: center;
+  font-size: 24px; margin: 0 auto 10px;
+}
+.merchant-name { font-size: 16px; font-weight: 600; color: var(--gray-900); }
+.merchant-cat { font-size: 12px; color: var(--gray-400); margin-top: 2px; }
+.confirm-amount-box {
+  background: var(--gray-50); border-radius: 14px; padding: 18px;
+  text-align: center; margin-bottom: 20px;
+}
+.cam-label { font-size: 11px; color: var(--gray-400); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 4px; }
+.cam-amount { font-size: 32px; font-weight: 700; color: var(--gray-900); }
+.cam-saldo { font-size: 11px; color: var(--gray-400); margin-top: 4px; }
+.confirm-detail { background: var(--gray-50); border-radius: 14px; padding: 14px 16px; margin-bottom: 20px; }
+.cd-row { display: flex; justify-content: space-between; padding: 5px 0; }
+.cd-label { font-size: 12px; color: var(--gray-500); }
+.cd-val { font-size: 12px; font-weight: 500; color: var(--gray-800); }
+.confirm-footer { margin-top: auto; display: flex; flex-direction: column; gap: 8px; }
+.btn-pagar {
+  width: 100%; padding: 15px; border-radius: 12px;
+  background: var(--pvs); color: white; border: none;
+  font-family: var(--font); font-size: 15px; font-weight: 600;
+  cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;
+  transition: all 0.2s;
+}
+.btn-pagar:active { background: var(--pvs-dark); transform: scale(0.98); }
+.btn-cancel { background: none; border: none; color: var(--gray-400); font-family: var(--font); font-size: 13px; cursor: pointer; text-align: center; padding: 6px; }
+
+/* ─── SCREEN 6: PROCESANDO ─── */
+#s-procesando { background: white; }
+.proc-body { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px 24px; }
+.proc-loader {
+  width: 64px; height: 64px; border-radius: 50%;
+  border: 4px solid var(--pvs-light);
+  border-top-color: var(--pvs);
+  animation: spin 0.8s linear infinite; margin-bottom: 20px;
+}
+.proc-title { font-size: 16px; font-weight: 600; color: var(--gray-900); margin-bottom: 6px; }
+.proc-sub { font-size: 13px; color: var(--gray-400); text-align: center; }
+
+/* ─── SCREEN 7: ÉXITO + ADJUNTAR ─── */
+#s-exito { background: white; }
+.exito-header { background: var(--pvs); height: 8px; flex-shrink: 0; }
+.exito-body { flex: 1; display: flex; flex-direction: column; padding: 28px 24px; overflow-y: auto; }
+.exito-check {
+  width: 72px; height: 72px; border-radius: 50%;
+  background: var(--green-l); display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 16px; animation: popIn 0.4s cubic-bezier(0.34,1.56,0.64,1);
+}
+@keyframes popIn { from { transform: scale(0); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+.exito-title { text-align: center; font-size: 18px; font-weight: 700; color: var(--gray-900); margin-bottom: 4px; }
+.exito-sub { text-align: center; font-size: 13px; color: var(--gray-400); margin-bottom: 20px; }
+.exito-amount-box {
+  background: var(--gray-50); border-radius: 14px; padding: 14px 16px;
+  display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;
+}
+.eab-label { font-size: 12px; color: var(--gray-500); }
+.eab-val { font-size: 15px; font-weight: 700; color: var(--gray-900); }
+.eab-merchant { font-size: 12px; color: var(--gray-400); margin-top: 2px; }
+
+/* ADJUNTAR SECTION */
+.adjuntar-section {
+  background: var(--pvs-xlight); border: 1.5px dashed rgba(0,51,204,0.3);
+  border-radius: 14px; padding: 18px 16px; text-align: center; margin-bottom: 16px;
+  cursor: pointer; transition: all 0.2s;
+}
+.adjuntar-section:active { background: var(--pvs-light); }
+.adj-icon { font-size: 28px; margin-bottom: 8px; }
+.adj-title { font-size: 13px; font-weight: 600; color: var(--pvs); margin-bottom: 3px; }
+.adj-sub { font-size: 11px; color: var(--gray-400); }
+.adj-btns { display: flex; gap: 8px; margin-top: 12px; }
+.adj-btn {
+  flex: 1; padding: 10px; border-radius: 8px; border: none;
+  font-family: var(--font); font-size: 12px; font-weight: 500;
+  cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 5px;
+  transition: all 0.15s;
+}
+.adj-btn-primary { background: var(--pvs); color: white; }
+.adj-btn-secondary { background: white; color: var(--pvs); border: 1px solid rgba(0,51,204,0.2); }
+.adj-btn:active { transform: scale(0.97); }
+.adj-skip { background: none; border: none; color: var(--gray-400); font-family: var(--font); font-size: 12px; cursor: pointer; text-align: center; display: block; width: 100%; padding: 8px; }
+
+.exito-footer { margin-top: auto; display: flex; flex-direction: column; gap: 8px; }
+.btn-home { width: 100%; padding: 14px; border-radius: 12px; background: var(--pvs); color: white; border: none; font-family: var(--font); font-size: 14px; font-weight: 600; cursor: pointer; }
+.btn-share { width: 100%; padding: 12px; border-radius: 12px; background: var(--gray-50); color: var(--gray-700); border: 1px solid var(--gray-200); font-family: var(--font); font-size: 13px; font-weight: 500; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; }
+
+/* ─── SCREEN 8: HISTORIAL ─── */
+#s-historial { background: var(--gray-50); }
+.hist-header { background: var(--pvs); padding: 12px 16px 16px; flex-shrink: 0; }
+.hist-header-top { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+.hist-back { width: 32px; height: 32px; border-radius: 50%; background: rgba(255,255,255,0.15); border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; color: white; }
+.hist-title { color: white; font-size: 15px; font-weight: 600; }
+.hist-filter { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 2px; }
+.hist-filter::-webkit-scrollbar { display: none; }
+.hf-chip {
+  padding: 5px 12px; border-radius: 20px; white-space: nowrap;
+  font-size: 11px; font-weight: 500; cursor: pointer; flex-shrink: 0;
+  background: rgba(255,255,255,0.15); color: rgba(255,255,255,0.8); border: none;
+  font-family: var(--font);
+}
+.hf-chip.active { background: white; color: var(--pvs); }
+
+.hist-body { flex: 1; overflow-y: auto; padding: 12px 14px; }
+.hist-date-label { font-size: 11px; font-weight: 600; color: var(--gray-400); text-transform: uppercase; letter-spacing: 0.06em; padding: 8px 0 6px; }
+.hist-item {
+  display: flex; align-items: center; gap: 10px;
+  background: white; border-radius: 12px; padding: 11px 12px;
+  margin-bottom: 6px; border: 1px solid var(--gray-100); cursor: pointer;
+  transition: box-shadow 0.15s;
+}
+.hist-item:active { box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+.hi-icon { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
+.hi-info { flex: 1; min-width: 0; }
+.hi-name { font-size: 13px; font-weight: 500; color: var(--gray-900); }
+.hi-cat { font-size: 11px; color: var(--gray-400); }
+.hi-right { text-align: right; }
+.hi-amount { font-size: 13px; font-weight: 600; color: var(--gray-900); }
+.hi-ticket { margin-top: 2px; }
+
+/* TICKET PENDIENTE BANNER */
+.ticket-pending-banner {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 10px; color: var(--amber); font-weight: 500;
+  cursor: pointer; padding: 2px 6px; border-radius: 6px;
+  background: var(--amber-l); border: 1px solid #FDE68A;
+}
+
+/* MODAL DATOS EMPRESA */
+.modal-empresa {
+  display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);
+  z-index:1000;align-items:flex-end;justify-content:center;
+}
+.modal-empresa.open { display:flex; }
+.modal-empresa-sheet {
+  background:white;border-radius:20px 20px 0 0;
+  padding:20px 24px 40px;width:375px;
+  animation:slideUp 0.3s ease;
+}
+.mde-handle { width:36px;height:4px;background:var(--gray-200);border-radius:2px;margin:0 auto 18px; }
+.mde-title { font-size:15px;font-weight:600;margin-bottom:4px; }
+.mde-sub { font-size:12px;color:var(--gray-400);margin-bottom:20px; }
+.mde-field { padding:10px 0;border-bottom:1px solid var(--gray-100); }
+.mde-field:last-child { border-bottom:none; }
+.mde-label { font-size:10px;font-weight:600;color:var(--gray-400);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:3px; }
+.mde-val { font-size:13px;font-weight:500;color:var(--gray-900); }
+.mde-copy {
+  display:flex;align-items:center;justify-content:space-between;
+}
+.mde-copy-btn {
+  background:var(--pvs-light);color:var(--pvs);border:none;
+  border-radius:6px;padding:3px 8px;font-size:10px;font-weight:600;
+  cursor:pointer;font-family:var(--font);
+}
+/* PROXIMAMENTE MODAL */
+.modal-prox {
+  display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);
+  z-index:1000;align-items:center;justify-content:center;
+}
+.modal-prox.open { display:flex; }
+.modal-prox-box {
+  background:white;border-radius:16px;padding:28px 24px;
+  width:320px;text-align:center;animation:popIn 0.3s ease;
+}
+/* OCR field row */
+.ocr-row { display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--gray-100); }
+.ocr-row:last-child { border-bottom:none; }
+.ocr-key { font-size:11px;color:var(--gray-400);font-weight:500; }
+.ocr-val { font-size:11px;color:var(--gray-800);font-weight:500;text-align:right;max-width:55%; }
+/* Timeline item */
+.tl-row { display:flex;gap:8px;margin-bottom:10px; }
+.tl-dot2 { width:18px;height:18px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:8px;margin-top:1px; }
+.tl-dot2-blue { background:var(--pvs-light);color:var(--pvs); }
+.tl-dot2-green { background:var(--green-l);color:var(--green); }
+.tl-dot2-gray { background:var(--gray-100);color:var(--gray-400); }
+.tl-action2 { font-size:12px;font-weight:500;color:var(--gray-800); }
+.tl-time2 { font-size:10px;color:var(--gray-400); }
+</style>
+</head>
+<body>
+
+<div class="phone-wrap">
+  <div class="phone-label">PVS · App Comercios — Operador</div>
+  <div class="phone" id="phone">
+
+    <!-- ── SCREEN 3: HOME ── -->
+    <div class="screen" id="s-home">
+      <div class="status-bar dark" style="background:var(--pvs);position:relative;flex-shrink:0;">
+        <div class="status-bar-notch"></div>
+        <span class="status-time white">12:30</span>
+        <div class="status-icons">
+          <svg width="14" height="10" fill="white" viewBox="0 0 14 10"><rect x="0" y="4" width="2" height="6" rx="0.5"/><rect x="3" y="2" width="2" height="8" rx="0.5"/><rect x="6" y="0" width="2" height="10" rx="0.5"/><rect x="9" y="3" width="2" height="7" rx="0.5"/></svg>
+          <svg width="22" height="11" viewBox="0 0 22 11" fill="none"><rect x="0.5" y="0.5" width="18" height="10" rx="2" stroke="white" stroke-opacity="0.35"/><rect x="2" y="2" width="15" height="7" rx="1" fill="white"/></svg>
+        </div>
+      </div>
+      <div class="home-header">
+        <div class="home-header-bg"></div>
+        <div class="home-top">
+          <div class="home-greeting">
+            <div class="home-hi">Hola, 👋</div>
+            <div class="home-name">Carlos Méndez</div>
+          </div>
+          <div class="home-topright">
+            <button class="home-icon-btn" onclick="showHint('No hay notificaciones nuevas')">
+              <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+            </button>
+          </div>
+        </div>
+        <div class="saldo-card">
+          <div class="saldo-label">Saldo disponible</div>
+          <div class="saldo-amount">$112.550</div>
+          <div class="saldo-cvu">BAI Mantenimiento S.A.</div>
+        </div>
+      </div>
+      <div class="acciones-grid">
+        <button class="accion-btn" onclick="go('s-qr')">
+          <div class="accion-icon highlight">
+            <svg width="20" height="20" fill="none" stroke="white" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><path d="M14 14h3v3"/><path d="M17 17h3"/><path d="M20 14v3"/></svg>
+          </div>
+          <span class="accion-label">Pagar con QR</span>
+        </button>
+        <button class="accion-btn" onclick="openProximamente()">
+          <div class="accion-icon" style="position:relative;">
+            <svg width="20" height="20" fill="none" stroke="var(--pvs)" stroke-width="2" viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+            <span style="position:absolute;top:-5px;right:-5px;background:#FF9500;color:white;font-size:7px;font-weight:700;padding:1px 4px;border-radius:6px;white-space:nowrap;line-height:1.4;">Soon</span>
+          </div>
+          <span class="accion-label">Transferir</span>
+        </button>
+        <button class="accion-btn" onclick="go('s-historial')">
+          <div class="accion-icon">
+            <svg width="20" height="20" fill="none" stroke="var(--pvs)" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          </div>
+          <span class="accion-label">Historial</span>
+        </button>
+        <button class="accion-btn" onclick="openDatosEmpresa()">
+          <div class="accion-icon">
+            <svg width="20" height="20" fill="none" stroke="var(--pvs)" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>
+          </div>
+          <span class="accion-label">Datos empresa</span>
+        </button>
+      </div>
+      <div class="home-body">
+        <div class="home-section-title">
+          Últimos movimientos
+          <button class="home-section-link" onclick="go('s-historial')">Ver todos</button>
+        </div>
+        <div id="home-actividad"></div>
+      </div>
+      <nav class="bottom-nav">
+        <button class="bn-item active">
+          <div class="bn-icon-wrap"><svg width="18" height="18" fill="none" stroke="var(--pvs)" stroke-width="2" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>
+          <span class="bn-label" style="color:var(--pvs);">Inicio</span>
+        </button>
+        <button class="bn-item" onclick="go('s-historial')">
+          <div class="bn-icon-wrap"><svg width="18" height="18" fill="none" stroke="var(--gray-400)" stroke-width="2" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
+          <span class="bn-label">Historial</span>
+        </button>
+        <button class="bn-item" onclick="go('s-qr')">
+          <div class="bn-icon-wrap" style="background:var(--pvs);border-radius:50%;width:40px;height:40px;margin-top:-8px;">
+            <svg width="18" height="18" fill="none" stroke="white" stroke-width="2.5" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><path d="M14 14h3v3"/><path d="M17 17h3"/><path d="M20 14v3"/></svg>
+          </div>
+          <span class="bn-label">Pagar</span>
+        </button>
+        <button class="bn-item">
+          <div class="bn-icon-wrap"><svg width="18" height="18" fill="none" stroke="var(--gray-400)" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div>
+          <span class="bn-label">Más</span>
+        </button>
+      </nav>
+      <div class="hint-bar" id="hint-bar"></div>
+    </div>
+
+    <!-- ── SCREEN 4: ESCANEAR QR ── -->
+    <div class="screen hidden" id="s-qr" style="background:#111;flex-direction:column;">
+      <div class="status-bar" style="background:#111;">
+        <div class="status-bar-notch"></div>
+        <span class="status-time white">12:30</span>
+        <div class="status-icons">
+          <svg width="22" height="11" viewBox="0 0 22 11" fill="none"><rect x="0.5" y="0.5" width="18" height="10" rx="2" stroke="white" stroke-opacity="0.35"/><rect x="2" y="2" width="15" height="7" rx="1" fill="white"/></svg>
+        </div>
+      </div>
+      <div class="qr-header">
+        <button class="qr-back" onclick="go('s-home')">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+        </button>
+        <span class="qr-title">Escaneá el QR</span>
+      </div>
+      <div class="qr-viewfinder">
+        <div class="qr-grid-bg"></div>
+        <div style="width:300px;height:300px;position:relative;display:flex;align-items:center;justify-content:center;">
+          <div class="qr-cutout">
+            <div class="qr-corner tl"></div>
+            <div class="qr-corner tr"></div>
+            <div class="qr-corner bl"></div>
+            <div class="qr-corner br"></div>
+            <div class="qr-scan-line"></div>
+          </div>
+          <!-- QR simulado -->
+          <svg width="160" height="160" viewBox="0 0 160 160" style="position:relative;z-index:1;">
+            <rect width="160" height="160" fill="white" rx="4"/>
+            <g fill="#111">
+              <rect x="8" y="8" width="50" height="50" rx="4"/><rect x="14" y="14" width="38" height="38" rx="2" fill="white"/><rect x="20" y="20" width="26" height="26" rx="1"/>
+              <rect x="102" y="8" width="50" height="50" rx="4"/><rect x="108" y="14" width="38" height="38" rx="2" fill="white"/><rect x="114" y="20" width="26" height="26" rx="1"/>
+              <rect x="8" y="102" width="50" height="50" rx="4"/><rect x="14" y="108" width="38" height="38" rx="2" fill="white"/><rect x="20" y="114" width="26" height="26" rx="1"/>
+              <rect x="70" y="8" width="8" height="8"/><rect x="82" y="8" width="8" height="8"/><rect x="70" y="20" width="8" height="8"/><rect x="82" y="20" width="8" height="8"/><rect x="94" y="8" width="8" height="8"/>
+              <rect x="70" y="70" width="8" height="8"/><rect x="82" y="70" width="8" height="8"/><rect x="94" y="70" width="8" height="8"/><rect x="70" y="82" width="8" height="8"/><rect x="94" y="82" width="8" height="8"/>
+              <rect x="102" y="70" width="8" height="8"/><rect x="114" y="70" width="8" height="8"/><rect x="126" y="70" width="8" height="8"/><rect x="138" y="70" width="8" height="8"/><rect x="150" y="70" width="8" height="8"/>
+              <rect x="102" y="82" width="8" height="8"/><rect x="126" y="82" width="8" height="8"/><rect x="150" y="82" width="8" height="8"/>
+              <rect x="70" y="102" width="8" height="8"/><rect x="82" y="102" width="8" height="8"/><rect x="70" y="114" width="8" height="8"/><rect x="94" y="102" width="8" height="8"/>
+              <rect x="70" y="126" width="8" height="8"/><rect x="82" y="114" width="8" height="8"/><rect x="94" y="114" width="8" height="8"/>
+              <rect x="70" y="138" width="8" height="8"/><rect x="82" y="126" width="8" height="8"/><rect x="94" y="126" width="8" height="8"/>
+              <rect x="102" y="102" width="8" height="8"/><rect x="114" y="102" width="8" height="8"/><rect x="126" y="102" width="8" height="8"/>
+              <rect x="138" y="102" width="8" height="8"/><rect x="150" y="102" width="8" height="8"/>
+              <rect x="114" y="114" width="8" height="8"/><rect x="138" y="114" width="8" height="8"/>
+              <rect x="102" y="126" width="8" height="8"/><rect x="126" y="114" width="8" height="8"/>
+              <rect x="114" y="126" width="8" height="8"/><rect x="150" y="126" width="8" height="8"/>
+              <rect x="102" y="138" width="8" height="8"/><rect x="114" y="138" width="8" height="8"/><rect x="126" y="138" width="8" height="8"/><rect x="138" y="138" width="8" height="8"/>
+            </g>
+          </svg>
+        </div>
+      </div>
+      <div class="qr-hint">Apuntá la cámara al código QR del comercio</div>
+      <div class="qr-galeria" onclick="go('s-confirmar')">
+        <svg width="16" height="16" fill="none" stroke="white" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+        <span>Escaneá el QR desde la galería</span>
+      </div>
+      <div style="background:#111;height:16px;flex-shrink:0;"></div>
+    </div>
+
+    <!-- ── SCREEN 5: CONFIRMAR PAGO ── -->
+    <div class="screen hidden" id="s-confirmar">
+      <div class="status-bar dark">
+        <div class="status-bar-notch"></div>
+        <span class="status-time dark">12:30</span>
+        <div class="status-icons">
+          <svg width="14" height="10" fill="var(--gray-900)" viewBox="0 0 14 10"><rect x="0" y="4" width="2" height="6" rx="0.5"/><rect x="3" y="2" width="2" height="8" rx="0.5"/><rect x="6" y="0" width="2" height="10" rx="0.5"/><rect x="9" y="3" width="2" height="7" rx="0.5"/></svg>
+          <svg width="22" height="11" viewBox="0 0 22 11" fill="none"><rect x="0.5" y="0.5" width="18" height="10" rx="2" stroke="black" stroke-opacity="0.35"/><rect x="2" y="2" width="15" height="7" rx="1" fill="black" fill-opacity="0.8"/></svg>
+        </div>
+      </div>
+      <div class="confirm-header">
+        <button class="confirm-back" onclick="go('s-qr')">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+        </button>
+        <span class="confirm-title">Pagar con QR</span>
+      </div>
+      <div class="confirm-body">
+        <div class="confirm-merchant">
+          <div class="merchant-icon">⛽</div>
+          <div class="merchant-name">YPF San Martín</div>
+          <div class="merchant-cat">Combustible · San Martín 1240, CABA</div>
+        </div>
+        <div class="confirm-amount-box">
+          <div class="cam-label">Vas a pagar</div>
+          <div class="cam-amount">$47.500,00</div>
+          <div class="cam-saldo">Saldo disponible: $112.550,00</div>
+        </div>
+        <div class="confirm-detail">
+          <div class="cd-row">
+            <span class="cd-label">Desde</span>
+            <span class="cd-val">Billetera BAI Mantenimiento</span>
+          </div>
+          <div class="cd-row">
+            <span class="cd-label">CUIT empresa</span>
+            <span class="cd-val">30-71234567-8</span>
+          </div>
+          <div class="cd-row">
+            <span class="cd-label">Fecha</span>
+            <span class="cd-val">20/05/2026, 12:30</span>
+          </div>
+        </div>
+        <div class="confirm-footer">
+          <button class="btn-pagar" onclick="doPagar()">Pagar $47.500,00</button>
+          <button class="btn-cancel" onclick="go('s-home')">Cancelar</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── SCREEN 6: PROCESANDO ── -->
+    <div class="screen hidden" id="s-procesando">
+      <div class="status-bar dark">
+        <div class="status-bar-notch"></div>
+        <span class="status-time dark">12:30</span>
+      </div>
+      <div class="proc-body">
+        <div class="proc-loader"></div>
+        <div class="proc-title">Estamos procesando el pago</div>
+        <div class="proc-sub">No cierres la aplicación</div>
+      </div>
+    </div>
+
+    <!-- ── SCREEN 7: ÉXITO + ADJUNTAR ── -->
+    <div class="screen hidden" id="s-exito">
+      <div class="status-bar dark">
+        <div class="status-bar-notch"></div>
+        <span class="status-time dark">12:30</span>
+        <div class="status-icons">
+          <svg width="14" height="10" fill="var(--gray-900)" viewBox="0 0 14 10"><rect x="0" y="4" width="2" height="6" rx="0.5"/><rect x="3" y="2" width="2" height="8" rx="0.5"/><rect x="6" y="0" width="2" height="10" rx="0.5"/><rect x="9" y="3" width="2" height="7" rx="0.5"/></svg>
+          <svg width="22" height="11" viewBox="0 0 22 11" fill="none"><rect x="0.5" y="0.5" width="18" height="10" rx="2" stroke="black" stroke-opacity="0.35"/><rect x="2" y="2" width="15" height="7" rx="1" fill="black" fill-opacity="0.8"/></svg>
+        </div>
+      </div>
+      <div class="exito-header"></div>
+      <div class="exito-body">
+        <div class="exito-check">
+          <svg width="32" height="32" fill="none" stroke="var(--green)" stroke-width="3" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+        <div class="exito-title">¡Pagaste!</div>
+        <div class="exito-sub">El pago fue procesado exitosamente</div>
+        <div class="exito-amount-box">
+          <div>
+            <div class="eab-label">Monto pagado</div>
+            <div class="eab-merchant">YPF San Martín</div>
+          </div>
+          <div class="eab-val">$47.500,00</div>
+        </div>
+
+        <div class="adjuntar-section" id="adj-section">
+          <div class="adj-icon">📎</div>
+          <div class="adj-title">Adjuntá el comprobante fiscal</div>
+          <div class="adj-sub">La empresa necesita el ticket para aprobar el gasto. Podés adjuntarlo ahora o después desde Actividad.</div>
+          <div class="adj-btns">
+            <button class="adj-btn adj-btn-primary" onclick="adjuntarTicket()">
+              <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+              Foto de ticket
+            </button>
+            <button class="adj-btn adj-btn-secondary" onclick="adjuntarGaleria()">
+              <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+              Galería
+            </button>
+          </div>
+        </div>
+
+        <div id="adj-success" style="display:none;background:var(--green-l);border:1px solid #6EE7B7;border-radius:12px;padding:14px 16px;text-align:center;margin-bottom:16px;">
+          <div style="font-size:20px;margin-bottom:6px;">✅</div>
+          <div style="font-size:13px;font-weight:600;color:var(--green);">Comprobante adjuntado</div>
+          <div style="font-size:11px;color:#059669;margin-top:3px;">El administrador recibirá el comprobante para su revisión</div>
+        </div>
+
+        <button class="adj-skip" id="adj-skip-btn" onclick="go('s-home')">Cargar comprobante después</button>
+
+        <div class="exito-footer">
+          <button class="btn-home" onclick="go('s-home')">Volver al inicio</button>
+          <button class="btn-share">
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+            Compartir comprobante
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── SCREEN 8: HISTORIAL ── -->
+    <div class="screen hidden" id="s-historial">
+      <div class="status-bar dark" style="background:var(--pvs);flex-shrink:0;">
+        <div class="status-bar-notch"></div>
+        <span class="status-time white">12:30</span>
+        <div class="status-icons">
+          <svg width="22" height="11" viewBox="0 0 22 11" fill="none"><rect x="0.5" y="0.5" width="18" height="10" rx="2" stroke="white" stroke-opacity="0.35"/><rect x="2" y="2" width="15" height="7" rx="1" fill="white"/></svg>
+        </div>
+      </div>
+      <div class="hist-header">
+        <div class="hist-header-top">
+          <button class="hist-back" onclick="go('s-home')">
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+          </button>
+          <span class="hist-title">Historial</span>
+          <!-- Filtro categoría -->
+          <div style="margin-left:auto;position:relative;">
+            <button onclick="toggleCatFilter()" style="display:flex;align-items:center;gap:4px;background:rgba(255,255,255,0.15);border:none;border-radius:8px;padding:5px 10px;color:white;font-family:var(--font);font-size:11px;font-weight:500;cursor:pointer;" id="cat-filter-btn">
+              <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+              <span id="cat-filter-label">Categoría</span>
+            </button>
+            <div id="cat-dropdown" style="display:none;position:absolute;top:34px;right:0;background:white;border-radius:10px;box-shadow:0 4px 16px rgba(0,0,0,0.15);width:160px;z-index:200;overflow:hidden;">
+              <div onclick="setCat('',this)" style="padding:10px 14px;font-size:12px;cursor:pointer;color:var(--gray-700);background:var(--pvs-light);font-weight:500;">Todas</div>
+              <div onclick="setCat('Transporte',this)" style="padding:10px 14px;font-size:12px;cursor:pointer;color:var(--gray-700);border-top:1px solid var(--gray-100);">⛽ Transporte</div>
+              <div onclick="setCat('Gastronomía',this)" style="padding:10px 14px;font-size:12px;cursor:pointer;color:var(--gray-700);border-top:1px solid var(--gray-100);">🍔 Gastronomía</div>
+              <div onclick="setCat('Suministros',this)" style="padding:10px 14px;font-size:12px;cursor:pointer;color:var(--gray-700);border-top:1px solid var(--gray-100);">🔧 Suministros</div>
+              <div onclick="setCat('Servicios',this)" style="padding:10px 14px;font-size:12px;cursor:pointer;color:var(--gray-700);border-top:1px solid var(--gray-100);">💡 Servicios</div>
+            </div>
+          </div>
+        </div>
+        <!-- Tabs estado -->
+        <div class="hist-filter">
+          <button class="hf-chip active" id="htab-todos" onclick="setHistTab('todos',this)">Todos</button>
+          <button class="hf-chip" id="htab-pendiente" onclick="setHistTab('pendiente',this)">Sin comprobante</button>
+          <button class="hf-chip" id="htab-aprobado" onclick="setHistTab('aprobado',this)">Aprobados</button>
+          <button class="hf-chip" id="htab-rechazado" onclick="setHistTab('rechazado',this)">Rechazados</button>
+        </div>
+      </div>
+      <div class="hist-body" id="hist-body-list">
+        <!-- renderizado por JS -->
+      </div>
+    </div>
+
+    <!-- ── SCREEN 9: DETALLE TRANSACCIÓN ── -->
+    <div class="screen hidden" id="s-detalle">
+      <div class="status-bar dark" style="background:var(--pvs);flex-shrink:0;">
+        <div class="status-bar-notch"></div>
+        <span class="status-time white">12:30</span>
+        <div class="status-icons">
+          <svg width="22" height="11" viewBox="0 0 22 11" fill="none"><rect x="0.5" y="0.5" width="18" height="10" rx="2" stroke="white" stroke-opacity="0.35"/><rect x="2" y="2" width="15" height="7" rx="1" fill="white"/></svg>
+        </div>
+      </div>
+      <div style="background:var(--pvs);padding:10px 16px 18px;flex-shrink:0;">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
+          <button onclick="go('s-historial')" style="width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,0.15);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;color:white;flex-shrink:0;">
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+          </button>
+          <span style="color:white;font-size:15px;font-weight:600;" id="det-title">Detalle del gasto</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px;">
+          <div id="det-icon" style="width:44px;height:44px;border-radius:12px;background:rgba(255,255,255,0.15);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;"></div>
+          <div>
+            <div id="det-comercio" style="color:white;font-size:15px;font-weight:600;"></div>
+            <div id="det-cat" style="color:rgba(255,255,255,0.65);font-size:12px;margin-top:2px;"></div>
+          </div>
+          <div style="margin-left:auto;text-align:right;">
+            <div id="det-monto" style="color:white;font-size:18px;font-weight:700;"></div>
+            <div id="det-estado-badge" style="margin-top:3px;"></div>
+          </div>
+        </div>
+      </div>
+      <div style="flex:1;overflow-y:auto;padding:16px;">
+        <!-- Datos del OCR -->
+        <div style="background:white;border-radius:12px;border:1px solid var(--gray-100);margin-bottom:12px;overflow:hidden;">
+          <div style="padding:10px 14px;background:var(--pvs-xlight);border-bottom:1px solid var(--gray-100);display:flex;align-items:center;gap:6px;">
+            <svg width="13" height="13" fill="none" stroke="var(--pvs)" stroke-width="2" viewBox="0 0 24 24"><path d="M9 3H5a2 2 0 0 0-2 2v4m6-6h10a2 2 0 0 1 2 2v4M9 3v18m0 0h10a2 2 0 0 0 2-2v-4M9 21H5a2 2 0 0 1-2-2v-4m0 0h18"/></svg>
+            <span style="font-size:11px;font-weight:600;color:var(--pvs);text-transform:uppercase;letter-spacing:0.06em;">Datos leídos por IA · OCR</span>
+          </div>
+          <div style="padding:12px 14px;" id="det-ocr-campos"></div>
+        </div>
+        <!-- Adjuntar si está pendiente -->
+        <div id="det-adj-section" style="display:none;background:var(--pvs-xlight);border:1.5px dashed rgba(0,51,204,0.3);border-radius:12px;padding:14px;text-align:center;margin-bottom:12px;">
+          <div style="font-size:22px;margin-bottom:6px;">📎</div>
+          <div style="font-size:13px;font-weight:600;color:var(--pvs);margin-bottom:3px;">Sin comprobante adjunto</div>
+          <div style="font-size:11px;color:var(--gray-400);margin-bottom:12px;">Adjuntá el ticket fiscal para que el administrador pueda aprobarlo.</div>
+          <div style="display:flex;gap:8px;">
+            <button onclick="adjFromDetail()" style="flex:1;padding:10px;border-radius:8px;background:var(--pvs);color:white;border:none;font-family:var(--font);font-size:12px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:5px;">
+              <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+              Tomar foto
+            </button>
+            <button onclick="adjFromDetail()" style="flex:1;padding:10px;border-radius:8px;background:white;color:var(--pvs);border:1px solid rgba(0,51,204,0.2);font-family:var(--font);font-size:12px;font-weight:500;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:5px;">
+              <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+              Galería
+            </button>
+          </div>
+        </div>
+        <!-- Comprobante adjunto -->
+        <div id="det-comp-ok" style="display:none;background:var(--green-l);border:1px solid #6EE7B7;border-radius:12px;padding:12px 14px;margin-bottom:12px;display:none;align-items:center;gap:10px;">
+          <div style="font-size:20px;">✅</div>
+          <div>
+            <div style="font-size:12px;font-weight:600;color:var(--green);">Comprobante adjunto</div>
+            <div style="font-size:11px;color:#059669;">Pendiente de revisión por el administrador</div>
+          </div>
+        </div>
+        <!-- Timeline -->
+        <div style="background:white;border-radius:12px;border:1px solid var(--gray-100);padding:12px 14px;">
+          <div style="font-size:11px;font-weight:600;color:var(--gray-400);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:10px;">Historial</div>
+          <div id="det-timeline"></div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- end .phone -->
+</div>
+
+<!-- ── TRANSITIONS ─── -->
+<style>
+.slide-up { animation: slideUp 0.3s ease; }
+@keyframes slideUp { from { transform: translateY(30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+.hint-bar {
+  position: absolute; bottom: 90px; left: 16px; right: 16px;
+  background: rgba(0,0,0,0.75); border-radius: 10px;
+  padding: 10px 14px; color: white; font-size: 11px; text-align: center;
+  z-index: 100; opacity: 0; transition: opacity 0.3s; pointer-events: none;
+}
+.hint-bar.show { opacity: 1; }
+</style>
+
+<!-- MODAL DATOS EMPRESA -->
+<div class="modal-empresa" id="modal-empresa" onclick="if(event.target===this)this.classList.remove('open')">
+  <div class="modal-empresa-sheet">
+    <div class="mde-handle"></div>
+    <div class="mde-title">Datos de la empresa</div>
+    <div class="mde-sub">Usá esta información para solicitar factura a nombre de la empresa.</div>
+    <div class="mde-field">
+      <div class="mde-label">Razón Social</div>
+      <div class="mde-copy">
+        <div class="mde-val">BAI Mantenimiento S.A.</div>
+        <button class="mde-copy-btn" onclick="copiarDato('BAI Mantenimiento S.A.')">Copiar</button>
+      </div>
+    </div>
+    <div class="mde-field">
+      <div class="mde-label">CUIT</div>
+      <div class="mde-copy">
+        <div class="mde-val">30-71234567-8</div>
+        <button class="mde-copy-btn" onclick="copiarDato('30-71234567-8')">Copiar</button>
+      </div>
+    </div>
+    <div class="mde-field">
+      <div class="mde-label">Dirección fiscal</div>
+      <div class="mde-copy">
+        <div class="mde-val">Av. del Libertador 1250, CABA</div>
+        <button class="mde-copy-btn" onclick="copiarDato('Av. del Libertador 1250, CABA')">Copiar</button>
+      </div>
+    </div>
+    <div class="mde-field">
+      <div class="mde-label">Condición IVA</div>
+      <div class="mde-val">Responsable Inscripto</div>
+    </div>
+    <button onclick="document.getElementById('modal-empresa').classList.remove('open')" style="width:100%;padding:13px;margin-top:16px;border-radius:10px;background:var(--pvs);color:white;border:none;font-family:var(--font);font-size:14px;font-weight:600;cursor:pointer;">Cerrar</button>
+  </div>
+</div>
+
+<!-- MODAL PRÓXIMAMENTE -->
+<div class="modal-prox" id="modal-prox" onclick="if(event.target===this)this.classList.remove('open')">
+  <div class="modal-prox-box">
+    <div style="font-size:36px;margin-bottom:12px;">🚀</div>
+    <div style="font-size:16px;font-weight:700;color:var(--gray-900);margin-bottom:6px;">Próximamente</div>
+    <div style="font-size:13px;color:var(--gray-400);margin-bottom:20px;line-height:1.5;">La función de transferencias estará disponible en una próxima versión de la app.</div>
+    <button onclick="document.getElementById('modal-prox').classList.remove('open')" style="width:100%;padding:12px;border-radius:10px;background:var(--pvs);color:white;border:none;font-family:var(--font);font-size:14px;font-weight:600;cursor:pointer;">Entendido</button>
+  </div>
+</div>
+
+<!-- MODAL ADJUNTAR DESDE HISTORIAL -->
+<div id="adj-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:1000;align-items:flex-end;justify-content:center;">
+  <div style="background:white;border-radius:20px 20px 0 0;padding:20px 24px 36px;width:375px;animation:slideUp 0.3s ease;">
+    <div style="width:36px;height:4px;background:var(--gray-200);border-radius:2px;margin:0 auto 16px;"></div>
+    <div style="font-size:15px;font-weight:600;margin-bottom:4px;">Adjuntar comprobante</div>
+    <div style="font-size:12px;color:var(--gray-400);margin-bottom:20px;" id="adj-modal-sub">YPF San Martín · $47.500</div>
+    <div style="display:flex;flex-direction:column;gap:10px;">
+      <button onclick="confirmarAdj()" style="width:100%;padding:14px;border-radius:12px;background:var(--pvs);color:white;border:none;font-family:var(--font);font-size:14px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+        Tomar foto del ticket
+      </button>
+      <button onclick="confirmarAdj()" style="width:100%;padding:14px;border-radius:12px;background:var(--gray-50);color:var(--gray-700);border:1px solid var(--gray-200);font-family:var(--font);font-size:14px;font-weight:500;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+        Adjuntar desde galería
+      </button>
+      <button onclick="closeAdjModal()" style="background:none;border:none;color:var(--gray-400);font-family:var(--font);font-size:13px;cursor:pointer;padding:8px;">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── DATA ──
+const txData = [
+  { id:1, comercio:'YPF San Martín', cat:'Transporte', icon:'⛽', bg:'#FEF9C3', monto:47500, fecha:'Hoy', hora:'09:14', estado:'pendiente', ocr:{ fecha:'20/05/2026', cuit:'30-71234567-8', razonSocial:'YPF S.A.', tipo:'Factura A', nro:'0001-00128934', monto:'$47.500,00', iva:'$6.714,88', itc:'$8.264,46', iibb:'$1.187,50', percepciones:'$594,75' } },
+  { id:2, comercio:"McDonald's Belgrano", cat:'Gastronomía', icon:'🍔', bg:'#DCFCE7', monto:8400, fecha:'Ayer', hora:'13:22', estado:'aprobado', ocr:{ fecha:'19/05/2026', cuit:'30-65432198-0', razonSocial:"Arcos Dorados S.A.", tipo:'Factura B', nro:'0002-00043210', monto:'$8.400,00', iva:'-', itc:'-', iibb:'$210,00', percepciones:'-' } },
+  { id:3, comercio:'Autopista del Sol', cat:'Transporte', icon:'🛣️', bg:'#DBEAFE', monto:3200, fecha:'Ayer', hora:'08:45', estado:'pendiente', ocr:null },
+  { id:4, comercio:'Ferretería Central', cat:'Suministros', icon:'🔧', bg:'#F3E8FF', monto:23600, fecha:'18 may', hora:'10:20', estado:'revision', ocr:{ fecha:'18/05/2026', cuit:'20-12345678-9', razonSocial:'Central Herramientas S.R.L.', tipo:'Factura A', nro:'0001-00009871', monto:'$23.600,00', iva:'$3.338,57', itc:'-', iibb:'$590,00', percepciones:'$236,00' } },
+  { id:5, comercio:'La Parrilla del Centro', cat:'Gastronomía', icon:'🍖', bg:'#DCFCE7', monto:12500, fecha:'18 may', hora:'13:30', estado:'aprobado', ocr:{ fecha:'18/05/2026', cuit:'27-98765432-1', razonSocial:'Gastronomía Centro S.A.', tipo:'Factura B', nro:'0001-00056781', monto:'$12.500,00', iva:'-', itc:'-', iibb:'$312,50', percepciones:'-' } },
+];
+
+// ── NAV ──
+let currentScreen = 's-home';
+function go(id) {
+  const curr = document.getElementById(currentScreen);
+  const next = document.getElementById(id);
+  curr.classList.add('hidden-back');
+  next.classList.remove('hidden', 'hidden-up', 'hidden-back');
+  currentScreen = id;
+  setTimeout(() => curr.classList.add('hidden'), 350);
+  if(id === 's-historial') renderHist();
+}
+
+// ── PAGAR ──
+function doPagar() { go('s-procesando'); setTimeout(() => go('s-exito'), 2000); }
+
+// ── ADJUNTAR POST-PAGO ──
+function adjuntarTicket() { showAdjSuccess(); }
+function adjuntarGaleria() { showAdjSuccess(); }
+function showAdjSuccess() {
+  document.getElementById('adj-section').style.display = 'none';
+  document.getElementById('adj-skip-btn').style.display = 'none';
+  document.getElementById('adj-success').style.display = 'block';
+}
+
+// ── DATOS EMPRESA ──
+function openDatosEmpresa() { document.getElementById('modal-empresa').classList.add('open'); }
+function copiarDato(txt) {
+  navigator.clipboard.writeText(txt).catch(()=>{});
+  showHint('✓ Copiado: ' + txt);
+}
+
+// ── PRÓXIMAMENTE ──
+function openProximamente() { document.getElementById('modal-prox').classList.add('open'); }
+
+// ── HISTORIAL ──
+let histTab = 'todos';
+let histCat = '';
+
+function setHistTab(tab, el) {
+  histTab = tab;
+  document.querySelectorAll('.hf-chip').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  renderHist();
+}
+
+function toggleCatFilter() {
+  const dd = document.getElementById('cat-dropdown');
+  dd.style.display = dd.style.display === 'none' ? 'block' : 'none';
+}
+function setCat(cat, el) {
+  histCat = cat;
+  document.getElementById('cat-filter-label').textContent = cat || 'Categoría';
+  document.getElementById('cat-dropdown').style.display = 'none';
+  el.closest('#cat-dropdown').querySelectorAll('div').forEach(d => d.style.background = '');
+  el.style.background = 'var(--pvs-xlight)';
+  renderHist();
+}
+document.addEventListener('click', e => {
+  const dd = document.getElementById('cat-dropdown');
+  if(dd && !e.target.closest('#cat-filter-btn') && !e.target.closest('#cat-dropdown')) dd.style.display = 'none';
+});
+
+const estadoBadge = {
+  pendiente: `<span style="background:var(--amber-l);color:var(--amber);font-size:10px;padding:2px 6px;border-radius:10px;font-weight:500;">Sin comprobante</span>`,
+  aprobado: `<span style="background:var(--green-l);color:var(--green);font-size:10px;padding:2px 6px;border-radius:10px;font-weight:500;">✓ Aprobado</span>`,
+  rechazado: `<span style="background:var(--red-l);color:var(--red);font-size:10px;padding:2px 6px;border-radius:10px;font-weight:500;">✗ Rechazado</span>`,
+  revision: `<span style="background:var(--pvs-light);color:var(--pvs);font-size:10px;padding:2px 6px;border-radius:10px;font-weight:500;">Comprobante adjunto</span>`,
+};
+
+function renderHist() {
+  let lista = txData.filter(tx => {
+    if(histTab === 'pendiente' && tx.estado !== 'pendiente') return false;
+    if(histTab === 'aprobado' && tx.estado !== 'aprobado') return false;
+    if(histTab === 'rechazado' && tx.estado !== 'rechazado') return false;
+    if(histCat && tx.cat !== histCat) return false;
+    return true;
+  });
+  const groups = {};
+  lista.forEach(tx => { if(!groups[tx.fecha]) groups[tx.fecha] = []; groups[tx.fecha].push(tx); });
+  const container = document.getElementById('hist-body-list');
+  if(lista.length === 0) {
+    container.innerHTML = `<div style="padding:40px 20px;text-align:center;color:var(--gray-400);font-size:13px;">No hay transacciones para este filtro</div>`;
+    return;
+  }
+  container.innerHTML = Object.entries(groups).map(([fecha, txs]) => `
+    <div class="hist-date-label">${fecha}</div>
+    ${txs.map(tx => `
+      <div class="hist-item" onclick="openDetalle(${tx.id})">
+        <div class="hi-icon" style="background:${tx.bg};">${tx.icon}</div>
+        <div class="hi-info"><div class="hi-name">${tx.comercio}</div><div class="hi-cat">${tx.cat} · ${tx.hora}</div></div>
+        <div class="hi-right">
+          <div class="hi-amount">−$${tx.monto.toLocaleString('es-AR')}</div>
+          <div class="hi-ticket" style="margin-top:3px;">${estadoBadge[tx.estado] || ''}</div>
+        </div>
+      </div>
+    `).join('')}
+  `).join('');
+}
+
+// ── DETALLE TX ──
+let detalleTx = null;
+function openDetalle(id) {
+  detalleTx = txData.find(t => t.id === id);
+  if(!detalleTx) return;
+  const tx = detalleTx;
+  document.getElementById('det-title').textContent = tx.comercio;
+  document.getElementById('det-icon').textContent = tx.icon;
+  document.getElementById('det-comercio').textContent = tx.comercio;
+  document.getElementById('det-cat').textContent = tx.cat + ' · ' + tx.fecha + ' ' + tx.hora;
+  document.getElementById('det-monto').textContent = '−$' + tx.monto.toLocaleString('es-AR');
+  const badgeHtml = {
+    pendiente: '<span style="background:rgba(255,255,255,0.2);color:white;font-size:10px;padding:2px 8px;border-radius:10px;">Sin comprobante</span>',
+    aprobado: '<span style="background:rgba(255,255,255,0.2);color:#6EE7B7;font-size:10px;padding:2px 8px;border-radius:10px;">✓ Aprobado</span>',
+    revision: '<span style="background:rgba(255,255,255,0.2);color:#93C5FD;font-size:10px;padding:2px 8px;border-radius:10px;">Comprobante adjunto</span>',
+    rechazado: '<span style="background:rgba(255,255,255,0.2);color:#FCA5A5;font-size:10px;padding:2px 8px;border-radius:10px;">✗ Rechazado</span>',
+  };
+  document.getElementById('det-estado-badge').innerHTML = badgeHtml[tx.estado] || '';
+  const ocrEl = document.getElementById('det-ocr-campos');
+  if(tx.ocr) {
+    const campos = [
+      ['Fecha', tx.ocr.fecha], ['CUIT emisor', tx.ocr.cuit], ['Razón Social', tx.ocr.razonSocial],
+      ['Tipo comprobante', tx.ocr.tipo], ['Nro. comprobante', tx.ocr.nro],
+      ['Monto total', tx.ocr.monto], ['IVA', tx.ocr.iva], ['ITC combustible', tx.ocr.itc],
+      ['Ret. IIBB', tx.ocr.iibb], ['Percepciones', tx.ocr.percepciones],
+    ];
+    ocrEl.innerHTML = campos.filter(([,v]) => v && v !== '-').map(([k,v]) => `
+      <div class="ocr-row"><span class="ocr-key">${k}</span><span class="ocr-val">${v}</span></div>
+    `).join('');
+  } else {
+    ocrEl.innerHTML = `<div style="text-align:center;padding:12px 0;color:var(--gray-400);font-size:12px;">Sin datos OCR — comprobante no adjuntado aún</div>`;
+  }
+  const adjSec = document.getElementById('det-adj-section');
+  const compOk = document.getElementById('det-comp-ok');
+  if(tx.estado === 'pendiente') {
+    adjSec.style.display = 'block'; compOk.style.display = 'none';
+  } else {
+    adjSec.style.display = 'none';
+    compOk.style.display = (tx.estado === 'revision' || tx.estado === 'aprobado') ? 'flex' : 'none';
+  }
+  document.getElementById('det-timeline').innerHTML = `
+    <div class="tl-row"><div class="tl-dot2 tl-dot2-blue">↑</div><div><div class="tl-action2">Pago registrado · QR</div><div class="tl-time2">${tx.fecha} ${tx.hora}</div></div></div>
+    ${tx.ocr ? `<div class="tl-row"><div class="tl-dot2 tl-dot2-blue">📷</div><div><div class="tl-action2">Comprobante adjunto</div><div class="tl-time2">${tx.fecha}</div></div></div>` : ''}
+    ${tx.estado === 'aprobado' ? `<div class="tl-row"><div class="tl-dot2 tl-dot2-green">✓</div><div><div class="tl-action2">Aprobado por administración</div><div class="tl-time2">Hoy</div></div></div>` : ''}
+    ${tx.estado === 'rechazado' ? `<div class="tl-row"><div class="tl-dot2 tl-dot2-gray">✗</div><div><div class="tl-action2">Rechazado por administración</div><div class="tl-time2">Hoy</div></div></div>` : ''}
+  `;
+  go('s-detalle');
+}
+
+function adjFromDetail() {
+  if(!detalleTx) return;
+  detalleTx.estado = 'revision';
+  detalleTx.ocr = detalleTx.ocr || { fecha:'Hoy', cuit:'(leyendo...)', razonSocial:'(leyendo...)', tipo:'Factura A', nro:'(leyendo...)', monto:'$'+detalleTx.monto.toLocaleString('es-AR'), iva:'-', itc:'-', iibb:'-', percepciones:'-' };
+  document.getElementById('det-adj-section').style.display = 'none';
+  document.getElementById('det-comp-ok').style.display = 'flex';
+  showHint('✅ Comprobante adjuntado. En revisión.');
+}
+
+// ── ADJ MODAL ──
+function openAdjuntar(e) { e && e.stopPropagation(); document.getElementById('adj-modal').style.display = 'flex'; }
+function closeAdjModal() { document.getElementById('adj-modal').style.display = 'none'; }
+function confirmarAdj() { closeAdjModal(); showHint('✅ Comprobante adjuntado correctamente'); }
+
+// ── HINT ──
+function showHint(msg) {
+  const h = document.getElementById('hint-bar');
+  if(!h) return;
+  h.textContent = msg;
+  h.classList.add('show');
+  setTimeout(() => h.classList.remove('show'), 2800);
+}
+
+// ── HOME: ÚLTIMOS MOVIMIENTOS ──
+const estadoBadgeHome = {
+  pendiente: `<span style="background:var(--amber-l);color:var(--amber);font-size:10px;padding:2px 6px;border-radius:10px;font-weight:500;">Sin comprobante</span>`,
+  aprobado:  `<span style="background:var(--green-l);color:var(--green);font-size:10px;padding:2px 6px;border-radius:10px;font-weight:500;">✓ Aprobado</span>`,
+  rechazado: `<span style="background:var(--red-l);color:var(--red);font-size:10px;padding:2px 6px;border-radius:10px;font-weight:500;">✗ Rechazado</span>`,
+  revision:  `<span style="background:var(--pvs-light);color:var(--pvs);font-size:10px;padding:2px 6px;border-radius:10px;font-weight:500;">Comprobante adjunto</span>`,
+};
+
+function renderHomeActividad() {
+  const container = document.getElementById('home-actividad');
+  const ultimas = txData.slice(0, 4);
+  container.innerHTML = ultimas.map(tx => `
+    <div class="activity-item" onclick="openDetalle(${tx.id})">
+      <div class="activity-icon-wrap" style="background:${tx.bg};">${tx.icon}</div>
+      <div class="activity-info">
+        <div class="activity-name">${tx.comercio}</div>
+        <div class="activity-date">${tx.fecha}, ${tx.hora}</div>
+      </div>
+      <div class="activity-right">
+        <div class="activity-amount">−$${tx.monto.toLocaleString('es-AR')}</div>
+        <div style="margin-top:3px;">${estadoBadgeHome[tx.estado] || ''}</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+// ── INIT ──
+renderHomeActividad();
+</script>
+</body>
+</html>
