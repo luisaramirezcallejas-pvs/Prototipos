@@ -475,7 +475,7 @@ tr:hover td { background: var(--gray-50); }
     <div class="sidebar-section-label">Gestión</div>
     <a class="nav-item" onclick="showSection('operadores')">
       <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-      Operadores
+      Cuentas y operadores
     </a>
   </div>
 
@@ -502,9 +502,9 @@ tr:hover td { background: var(--gray-50); }
         <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
         Exportar XLS
       </button>
-      <button class="btn btn-primary btn-sm" onclick="openModal('modal-operador')">
+      <button class="btn btn-primary btn-sm" id="topbar-cta" onclick="topbarCTA()">
         <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-        Nuevo operador
+        <span id="topbar-cta-label">Nueva cuenta</span>
       </button>
     </div>
   </div>
@@ -549,12 +549,12 @@ tr:hover td { background: var(--gray-50); }
       </div>
 
       <div style="display:grid;grid-template-columns:1fr 1.4fr;gap:16px;margin-bottom:20px;">
-        <!-- Saldos por operador -->
+        <!-- Saldo por cuenta -->
         <div class="panel">
           <div class="panel-header">
             <div>
-              <div class="panel-title">Saldos por operador</div>
-              <div class="panel-sub">Disponible vs límite asignado</div>
+              <div class="panel-title">Saldo por cuenta</div>
+              <div class="panel-sub">Disponible vs presupuesto total</div>
             </div>
             <div class="panel-header-end">
               <button class="btn btn-ghost btn-sm" onclick="showSection('operadores')">Ver todos</button>
@@ -581,9 +581,7 @@ tr:hover td { background: var(--gray-50); }
               <tr>
                 <th>Operador</th>
                 <th>Comercio</th>
-                <th>Categoría</th>
-                <th>Monto</th>
-                <th>Comprobante</th>
+                <th>Cuenta</th>
               </tr>
             </thead>
             <tbody id="dashboard-tx-list"></tbody>
@@ -634,12 +632,11 @@ tr:hover td { background: var(--gray-50); }
             <option>Pablo Torres</option>
           </select>
           <select class="filter-select" id="filter-cat" onchange="filterTx()">
-            <option value="">Todas las categorías</option>
-            <option>Transporte</option>
-            <option>Gastronomía</option>
-            <option>Suministros</option>
-            <option>Servicios</option>
-            <option>Otros</option>
+            <option value="">Cuenta</option>
+            <option>Combustible</option>
+            <option>Mantenimiento</option>
+            <option>Compras</option>
+            <option>Alimentación</option>
           </select>
           <select class="filter-select" id="filter-tipo-comp" onchange="filterTx()">
             <option value="">Tipo de comprobante</option>
@@ -667,8 +664,7 @@ tr:hover td { background: var(--gray-50); }
               <th>Fecha</th>
               <th>Operador</th>
               <th>Comercio</th>
-              <th>Categoría</th>
-              <th>Tipo comprobante</th>
+              <th>Cuenta</th>
               <th>Monto</th>
               <th>Estado comprobante</th>
               <th>Acciones</th>
@@ -689,19 +685,31 @@ tr:hover td { background: var(--gray-50); }
       </div>
     </section>
 
-    <!-- OPERADORES -->
+    <!-- CUENTAS Y OPERADORES -->
     <section id="sec-operadores" class="section">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;">
-        <div>
-          <div style="font-size:15px;font-weight:600;color:var(--gray-900);">Operadores registrados</div>
-          <div style="font-size:12px;color:var(--gray-400);">8 activos de 10 registrados</div>
+
+      <!-- TABS -->
+      <div style="display:flex;gap:0;border-bottom:1px solid var(--gray-200);margin-bottom:20px;">
+        <div class="tab active" id="tab-cuentas" onclick="setGestionTab('cuentas',this)" style="padding:10px 20px;">
+          Cuentas de gasto
+          <span style="background:var(--pvs-blue-light);color:var(--pvs-blue);font-size:10px;padding:1px 6px;border-radius:10px;margin-left:6px;" id="badge-ncuentas">4</span>
         </div>
-        <button class="btn btn-primary" onclick="openModal('modal-operador')">
-          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-          Nuevo operador
-        </button>
+        <div class="tab" id="tab-operadores" onclick="setGestionTab('operadores',this)" style="padding:10px 20px;">
+          Operadores
+          <span style="background:var(--gray-100);color:var(--gray-600);font-size:10px;padding:1px 6px;border-radius:10px;margin-left:6px;" id="badge-noperadores">8</span>
+        </div>
       </div>
-      <div class="op-grid" id="op-grid"></div>
+
+      <!-- TAB: CUENTAS DE GASTO -->
+      <div id="panel-cuentas">
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;" id="cuentas-grid"></div>
+      </div>
+
+      <!-- TAB: OPERADORES -->
+      <div id="panel-operadores" style="display:none;">
+        <div class="op-grid" id="op-grid"></div>
+      </div>
+
     </section>
 
   </div>
@@ -743,6 +751,14 @@ tr:hover td { background: var(--gray-50); }
               <div class="ticket-field-label">Nro. comprobante</div>
               <div class="ticket-field-val" id="mc-nro">0001-00128934</div>
             </div>
+            <div class="ticket-field" style="grid-column:1/-1;">
+              <div class="ticket-field-label">Dirección del comercio</div>
+              <div class="ticket-field-val" id="mc-dir">Av. San Martín 1240, CABA</div>
+            </div>
+            <div class="ticket-field" style="grid-column:1/-1;">
+              <div class="ticket-field-label">Condición frente al IVA</div>
+              <div class="ticket-field-val" id="mc-cond-iva">Responsable Inscripto</div>
+            </div>
             <div class="ticket-field">
               <div class="ticket-field-label">IVA</div>
               <div class="ticket-field-val" id="mc-iva">$6.714,88</div>
@@ -756,8 +772,8 @@ tr:hover td { background: var(--gray-50); }
               <div class="ticket-field-val" id="mc-iibb">$1.187,50</div>
             </div>
             <div class="ticket-field">
-              <div class="ticket-field-label">Categoría gasto</div>
-              <div class="ticket-field-val" id="mc-cat">Transporte</div>
+              <div class="ticket-field-label">Cuenta</div>
+              <div class="ticket-field-val" id="mc-cat">Combustible</div>
             </div>
           </div>
           <hr class="form-divider">
@@ -782,6 +798,56 @@ tr:hover td { background: var(--gray-50); }
   </div>
 </div>
 
+<!-- MODAL: NUEVA CUENTA DE GASTO -->
+<div class="modal-overlay" id="modal-cuenta">
+  <div class="modal">
+    <div class="modal-header">
+      <div>
+        <div class="modal-title">Nueva cuenta de gasto</div>
+        <div class="modal-sub">Define el nombre, presupuesto y asigná operadores</div>
+      </div>
+      <button class="modal-close" onclick="closeModal('modal-cuenta')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Nombre de la cuenta *</label>
+          <input class="form-input" placeholder="Ej: Combustible, Mantenimiento..." id="cuenta-nombre">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Ícono</label>
+          <select class="form-select" id="cuenta-icono">
+            <option value="⛽">⛽ Combustible</option>
+            <option value="🔧">🔧 Mantenimiento</option>
+            <option value="🛒">🛒 Compras</option>
+            <option value="🍽️">🍽️ Alimentación</option>
+            <option value="💡">💡 Servicios</option>
+            <option value="📦">📦 Suministros</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Presupuesto total de la cuenta *</label>
+        <div style="position:relative;">
+          <span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:13px;color:var(--gray-500);font-weight:500;">$</span>
+          <input class="form-input" style="padding-left:24px;" placeholder="0,00" id="cuenta-presupuesto" oninput="this.value=this.value.replace(/[^0-9.]/g,'')">
+        </div>
+        <div class="form-hint">Monto total disponible para todos los operadores asignados a esta cuenta.</div>
+      </div>
+      <hr class="form-divider">
+      <div class="form-group">
+        <label class="form-label">Operadores habilitados para esta cuenta</label>
+        <div style="display:flex;flex-direction:column;gap:6px;max-height:160px;overflow-y:auto;" id="cuenta-operadores-list"></div>
+        <div class="form-hint">Seleccioná los operadores que podrán gastar de esta cuenta.</div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('modal-cuenta')">Cancelar</button>
+      <button class="btn btn-primary" onclick="crearCuenta()">Crear cuenta</button>
+    </div>
+  </div>
+</div>
+
 <!-- MODAL: NUEVO OPERADOR -->
 <div class="modal-overlay" id="modal-operador">
   <div class="modal">
@@ -796,7 +862,7 @@ tr:hover td { background: var(--gray-50); }
       <div class="form-row">
         <div class="form-group">
           <label class="form-label">Nombre *</label>
-          <input class="form-input" placeholder="Ej: Juan Pérez" id="op-nombre">
+          <input class="form-input" placeholder="Ej: Juan" id="op-nombre">
         </div>
         <div class="form-group">
           <label class="form-label">Apellido *</label>
@@ -813,32 +879,31 @@ tr:hover td { background: var(--gray-50); }
           <input class="form-input" placeholder="+54 11 0000-0000" id="op-tel">
         </div>
       </div>
-      <div class="form-group">
-        <label class="form-label">Saldo inicial a fondear *</label>
-        <div style="position:relative;">
-          <span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:13px;color:var(--gray-500);font-weight:500;">$</span>
-          <input class="form-input" style="padding-left:24px;" placeholder="0,00" id="op-limite" oninput="this.value=this.value.replace(/[^0-9.]/g,'')">
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Área</label>
+          <select class="form-select" id="op-area">
+            <option value="">Seleccionar área...</option>
+            <option>Mantenimiento</option>
+            <option>Logística</option>
+            <option>Ventas</option>
+            <option>Administración</option>
+          </select>
         </div>
-        <div class="form-hint">Monto que se acreditará en la cuenta del operador al momento de su creación. Podés reasignarlo después desde la tarjeta del operador.</div>
+        <div class="form-group">
+          <label class="form-label">Rol en la empresa</label>
+          <input class="form-input" placeholder="Ej: Repartidor, Supervisor..." id="op-rol">
+        </div>
       </div>
+      <hr class="form-divider">
       <div class="form-group">
-        <label class="form-label">Área / Centro de referencia</label>
-        <select class="form-select" id="op-area">
-          <option value="">Seleccionar área...</option>
-          <option>Mantenimiento</option>
-          <option>Logística</option>
-          <option>Ventas</option>
-          <option>Administración</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label class="form-label">Rol en la empresa</label>
-        <input class="form-input" placeholder="Ej: Repartidor, Supervisor de campo, Gestor..." id="op-rol">
-        <div class="form-hint">Campo libre. Se usa para identificar la función del operador dentro de la organización.</div>
+        <label class="form-label">Cuentas de gasto habilitadas</label>
+        <div style="display:flex;flex-direction:column;gap:8px;" id="op-cuentas-asign"></div>
+        <div class="form-hint">Asigná el saldo disponible por cuenta para este operador. Dejá en $0 si no tiene acceso.</div>
       </div>
       <hr class="form-divider">
       <div style="background:var(--pvs-blue-light);border-radius:8px;padding:12px 14px;font-size:12px;color:var(--pvs-blue);">
-        <strong>Credenciales de acceso:</strong> Se generará automáticamente un usuario y contraseña temporal. El operador deberá cambiar su contraseña en el primer ingreso.
+        <strong>Credenciales de acceso:</strong> Se generará automáticamente un usuario y contraseña temporal. El operador deberá cambiarla en el primer ingreso.
       </div>
     </div>
     <div class="modal-footer">
@@ -981,34 +1046,44 @@ tr:hover td { background: var(--gray-50); }
 
 <script>
 // ── DATA ──
+const cuentas = [
+  { id:'C001', nombre:'Combustible', icono:'⛽', presupuesto:500000, gastado:387450, operadores:['OP001','OP004','OP007'] },
+  { id:'C002', nombre:'Mantenimiento', icono:'🔧', presupuesto:300000, gastado:241300, operadores:['OP003','OP006'] },
+  { id:'C003', nombre:'Compras', icono:'🛒', presupuesto:200000, gastado:82890, operadores:['OP002','OP004','OP006'] },
+  { id:'C004', nombre:'Alimentación', icono:'🍽️', presupuesto:150000, gastado:20900, operadores:['OP001','OP002','OP008'] },
+];
+
 const operadores = [
-  { id:'OP001', nombre:'Carlos Méndez', area:'Logística', limite:300000, gastado:187450, activo:true },
-  { id:'OP002', nombre:'Laura Soto', area:'Ventas', limite:200000, gastado:89200, activo:true },
-  { id:'OP003', nombre:'Héctor Ríos', area:'Mantenimiento', limite:250000, gastado:241300, activo:true },
-  { id:'OP004', nombre:'Ana Gómez', area:'Logística', limite:300000, gastado:156000, activo:true },
-  { id:'OP005', nombre:'Pablo Torres', area:'Ventas', limite:150000, gastado:12800, activo:false },
-  { id:'OP006', nombre:'María Castillo', area:'Mantenimiento', limite:200000, gastado:178900, activo:true },
-  { id:'OP007', nombre:'Diego Fernández', area:'Logística', limite:280000, gastado:95600, activo:true },
-  { id:'OP008', nombre:'Sofía Ramos', area:'Administración', limite:120000, gastado:44200, activo:true },
+  { id:'OP001', nombre:'Carlos Méndez', area:'Logística', rol:'Repartidor', gastado:187450, activo:true, cuentas:['C001','C004'] },
+  { id:'OP002', nombre:'Laura Soto', area:'Ventas', rol:'Supervisora', gastado:89200, activo:true, cuentas:['C003','C004'] },
+  { id:'OP003', nombre:'Héctor Ríos', area:'Mantenimiento', rol:'Técnico', gastado:241300, activo:true, cuentas:['C002'] },
+  { id:'OP004', nombre:'Ana Gómez', area:'Logística', rol:'Repartidora', gastado:156000, activo:true, cuentas:['C001','C003'] },
+  { id:'OP005', nombre:'Pablo Torres', area:'Ventas', rol:'Vendedor', gastado:12800, activo:false, cuentas:[] },
+  { id:'OP006', nombre:'María Castillo', area:'Mantenimiento', rol:'Técnica', gastado:178900, activo:true, cuentas:['C002','C003'] },
+  { id:'OP007', nombre:'Diego Fernández', area:'Logística', rol:'Repartidor', gastado:95600, activo:true, cuentas:['C001'] },
+  { id:'OP008', nombre:'Sofía Ramos', area:'Administración', rol:'Gestora', gastado:44200, activo:true, cuentas:['C004'] },
 ];
 
 const transacciones = [
-  { id:'TX001', fecha:'20/05/26', hora:'09:14', op:'Carlos Méndez', comercio:'YPF San Martín', categoria:'Transporte', monto:47500, estado:'pendiente', tipo:'Factura A' },
-  { id:'TX002', fecha:'20/05/26', hora:'11:32', op:'Laura Soto', comercio:'McDonald\'s Belgrano', categoria:'Gastronomía', monto:8400, estado:'aprobado', tipo:'Factura B' },
-  { id:'TX003', fecha:'19/05/26', hora:'14:05', op:'Héctor Ríos', comercio:'Ferretería Central', categoria:'Suministros', monto:23600, estado:'pendiente', tipo:'Factura A' },
-  { id:'TX004', fecha:'19/05/26', hora:'16:22', op:'Ana Gómez', comercio:'Shell Palermo', categoria:'Transporte', monto:55200, estado:'aprobado', tipo:'Factura A' },
-  { id:'TX005', fecha:'18/05/26', hora:'08:45', op:'Carlos Méndez', comercio:'Autopista del Sol', categoria:'Transporte', monto:3200, estado:'aprobado', tipo:'Factura A' },
-  { id:'TX006', fecha:'18/05/26', hora:'12:15', op:'María Castillo', comercio:'Distribuidora Norte', categoria:'Suministros', monto:67890, estado:'rechazado', tipo:'Factura A' },
-  { id:'TX007', fecha:'17/05/26', hora:'09:00', op:'Diego Fernández', comercio:'YPF Quilmes', categoria:'Transporte', monto:38400, estado:'pendiente', tipo:'Factura A' },
-  { id:'TX008', fecha:'17/05/26', hora:'13:30', op:'Sofía Ramos', comercio:'La Parrilla del Centro', categoria:'Gastronomía', monto:12500, estado:'pendiente', tipo:'Factura B' },
-  { id:'TX009', fecha:'16/05/26', hora:'10:20', op:'Laura Soto', comercio:'Telco SA', categoria:'Servicios', monto:15000, estado:'aprobado', tipo:'Factura A' },
-  { id:'TX010', fecha:'16/05/26', hora:'15:48', op:'Ana Gómez', comercio:'Peaje Lugones', categoria:'Transporte', monto:2100, estado:'aprobado', tipo:'Ticket C' },
-  { id:'TX011', fecha:'15/05/26', hora:'11:00', op:'Héctor Ríos', comercio:'Tornería Express', categoria:'Suministros', monto:45200, estado:'pendiente', tipo:'Factura A' },
-  { id:'TX012', fecha:'15/05/26', hora:'17:10', op:'Carlos Méndez', comercio:'BP Sur', categoria:'Transporte', monto:52800, estado:'aprobado', tipo:'Factura A' },
+  { id:'TX001', fecha:'20/05/26', hora:'09:14', op:'Carlos Méndez', comercio:'YPF San Martín', categoria:'Combustible', monto:47500, estado:'pendiente', tipo:'Factura A' },
+  { id:'TX002', fecha:'20/05/26', hora:'11:32', op:'Laura Soto', comercio:"McDonald's Belgrano", categoria:'Alimentación', monto:8400, estado:'aprobado', tipo:'Factura B' },
+  { id:'TX003', fecha:'19/05/26', hora:'14:05', op:'Héctor Ríos', comercio:'Ferretería Central', categoria:'Mantenimiento', monto:23600, estado:'pendiente', tipo:'Factura A' },
+  { id:'TX004', fecha:'19/05/26', hora:'16:22', op:'Ana Gómez', comercio:'Shell Palermo', categoria:'Combustible', monto:55200, estado:'aprobado', tipo:'Factura A' },
+  { id:'TX005', fecha:'18/05/26', hora:'08:45', op:'Carlos Méndez', comercio:'Autopista del Sol', categoria:'Combustible', monto:3200, estado:'aprobado', tipo:'Factura A' },
+  { id:'TX006', fecha:'18/05/26', hora:'12:15', op:'María Castillo', comercio:'Distribuidora Norte', categoria:'Compras', monto:67890, estado:'rechazado', tipo:'Factura A' },
+  { id:'TX007', fecha:'17/05/26', hora:'09:00', op:'Diego Fernández', comercio:'YPF Quilmes', categoria:'Combustible', monto:38400, estado:'pendiente', tipo:'Factura A' },
+  { id:'TX008', fecha:'17/05/26', hora:'13:30', op:'Sofía Ramos', comercio:'La Parrilla del Centro', categoria:'Alimentación', monto:12500, estado:'pendiente', tipo:'Factura B' },
+  { id:'TX009', fecha:'16/05/26', hora:'10:20', op:'Laura Soto', comercio:'Telco SA', categoria:'Compras', monto:15000, estado:'aprobado', tipo:'Factura A' },
+  { id:'TX010', fecha:'16/05/26', hora:'15:48', op:'Ana Gómez', comercio:'Peaje Lugones', categoria:'Combustible', monto:2100, estado:'aprobado', tipo:'Ticket C' },
+  { id:'TX011', fecha:'15/05/26', hora:'11:00', op:'Héctor Ríos', comercio:'Tornería Express', categoria:'Mantenimiento', monto:45200, estado:'pendiente', tipo:'Factura A' },
+  { id:'TX012', fecha:'15/05/26', hora:'17:10', op:'Carlos Méndez', comercio:'BP Sur', categoria:'Combustible', monto:52800, estado:'aprobado', tipo:'Factura A' },
 ];
 
 const catColors = {
-  'Transporte':'badge-blue','Gastronomía':'badge-green','Suministros':'badge-amber','Servicios':'badge-gray','Otros':'badge-gray'
+  'Combustible':'badge-blue',
+  'Mantenimiento':'badge-amber',
+  'Compras':'badge-gray',
+  'Alimentación':'badge-green',
 };
 
 function initials(nombre) {
@@ -1022,7 +1097,7 @@ function fmt(n) {
 const sectionTitles = {
   dashboard: ['Resumen','Grupo del Pilar · BAI'],
   gastos: ['Transacciones','Grupo del Pilar · BAI'],
-  operadores: ['Operadores','Gestión de accesos y saldos'],
+  operadores: ['Cuentas y operadores','Gestión de gastos y accesos'],
 };
 function showSection(id) {
   document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
@@ -1034,6 +1109,27 @@ function showSection(id) {
   const [title, sub] = sectionTitles[id] || [id, ''];
   document.getElementById('topbar-title').textContent = title;
   document.getElementById('topbar-sub').textContent = sub;
+  // Topbar CTA dinámico
+  const cta = document.getElementById('topbar-cta');
+  const ctaLabel = document.getElementById('topbar-cta-label');
+  if(id === 'operadores') {
+    cta.style.display = 'flex';
+    // label según tab activo
+    updateTopbarCTA();
+  } else {
+    cta.style.display = id === 'gastos' ? 'none' : 'flex';
+    if(ctaLabel) ctaLabel.textContent = 'Exportar';
+  }
+}
+function topbarCTA() {
+  const tab = document.querySelector('#sec-operadores .tab.active');
+  if(tab && tab.id === 'tab-operadores') openModalOperador();
+  else openModalCuenta();
+}
+function updateTopbarCTA() {
+  const ctaLabel = document.getElementById('topbar-cta-label');
+  const tab = document.querySelector('#sec-operadores .tab.active');
+  if(ctaLabel) ctaLabel.textContent = tab && tab.id === 'tab-operadores' ? 'Nuevo operador' : 'Nueva cuenta';
 }
 
 // ── MODALS ──
@@ -1049,49 +1145,17 @@ document.querySelectorAll('.modal-overlay').forEach(o => {
   o.addEventListener('click', e => { if(e.target === o) o.classList.remove('open'); });
 });
 
-// ── RENDER SALDOS ──
-function renderSaldos() {
-  const list = document.getElementById('saldo-list');
-  list.innerHTML = operadores.filter(o=>o.activo).slice(0,5).map(op => {
-    const pct = Math.round((op.gastado/op.limite)*100);
-    const colorClass = pct > 90 ? 'red' : pct > 70 ? 'amber' : 'blue';
-    return `<div style="margin-bottom:14px;">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
-        <div style="display:flex;align-items:center;gap:6px;">
-          <div class="op-avatar" style="width:22px;height:22px;font-size:9px;">${initials(op.nombre)}</div>
-          <span style="font-size:12px;font-weight:500;">${op.nombre.split(' ')[0]}</span>
-        </div>
-        <span style="font-size:11px;color:var(--gray-400);">${fmt(op.gastado)} / ${fmt(op.limite)}</span>
-      </div>
-      <div class="saldo-bar-track"><div class="saldo-bar-fill ${colorClass}" style="width:${pct}%"></div></div>
-    </div>`;
-  }).join('');
-}
-
-// ── RENDER DASHBOARD TX ──
-function renderDashTx() {
-  const tbody = document.getElementById('dashboard-tx-list');
-  tbody.innerHTML = transacciones.slice(0,6).map(tx => `
-    <tr>
-      <td><div class="td-operator"><div class="op-avatar">${initials(tx.op)}</div><div class="op-name">${tx.op.split(' ')[0]}</div></div></td>
-      <td style="font-size:12px;color:var(--gray-600);">${tx.comercio}</td>
-      <td><span class="badge ${catColors[tx.categoria]}">${tx.categoria}</span></td>
-      <td><span class="amount">${fmt(tx.monto)}</span></td>
-      <td>${badgeEstado(tx.estado)}</td>
-    </tr>
-  `).join('');
+// ── BADGE ESTADO ──
+function badgeEstado(e) {
+  if(e==='aprobado') return `<span class="badge badge-green"><span class="dot dot-green"></span>Aprobado</span>`;
+  if(e==='rechazado') return `<span class="badge badge-red"><span class="dot dot-red"></span>Rechazado</span>`;
+  return `<span class="badge badge-amber"><span class="dot dot-amber"></span>Pendiente</span>`;
 }
 
 // ── RENDER TX UNIFICADA ──
 let txFiltradas = [...transacciones];
 let txTab = 'todos';
 let selectedTx = new Set();
-
-function badgeEstado(e) {
-  if(e==='aprobado') return `<span class="badge badge-green"><span class="dot dot-green"></span>Aprobado</span>`;
-  if(e==='rechazado') return `<span class="badge badge-red"><span class="dot dot-red"></span>Rechazado</span>`;
-  return `<span class="badge badge-amber"><span class="dot dot-amber"></span>Pendiente</span>`;
-}
 
 function setTxTab(tab, el) {
   txTab = tab;
@@ -1184,7 +1248,6 @@ function bulkRechazar() {
   updateBadges();
   toast(`${ids.length} comprobante${ids.length > 1 ? 's' : ''} rechazado${ids.length > 1 ? 's' : ''}`, 'success');
 }
-
 function filterTx() {
   const q = document.getElementById('tx-search').value.toLowerCase();
   const op = document.getElementById('filter-op').value;
@@ -1200,7 +1263,6 @@ function filterTx() {
   });
   renderTx();
 }
-
 function quickAprobar(id) {
   const tx = transacciones.find(t => t.id === id);
   if(tx) {
@@ -1220,13 +1282,23 @@ function fillCompModal(tx) {
   document.getElementById('mc-sub').textContent = `${tx.op} · ${tx.fecha} ${tx.hora}`;
   document.getElementById('mc-monto').textContent = fmt(tx.monto);
   document.getElementById('mc-tipo').textContent = tx.tipo;
-  const itcVal = tx.categoria === 'Transporte' ? fmt(Math.round(tx.monto * 0.174)) : '-';
+  const itcVal = tx.categoria === 'Combustible' ? fmt(Math.round(tx.monto * 0.174)) : '-';
   document.getElementById('mc-itc').textContent = itcVal;
-  document.getElementById('mc-iva').textContent = fmt(Math.round(tx.monto * 0.1413));
+  document.getElementById('mc-iva').textContent = tx.tipo === 'Factura B' ? '-' : fmt(Math.round(tx.monto * 0.1413));
   document.getElementById('mc-iibb').textContent = fmt(Math.round(tx.monto * 0.025));
   document.getElementById('mc-cuit').textContent = '30-' + (Math.floor(Math.random()*90000000)+10000000) + '-8';
   document.getElementById('mc-nro').textContent = '0001-' + String(Math.floor(Math.random()*99999)+100000).padStart(8,'0');
   document.getElementById('mc-cat').textContent = tx.categoria;
+  const dirs = {
+    'YPF San Martín':'Av. San Martín 1240, CABA', "McDonald's Belgrano":'Av. Cabildo 2300, CABA',
+    'Ferretería Central':'Ruta 8 Km 32, GBA Oeste', 'Shell Palermo':'Av. Santa Fe 3502, CABA',
+    'Autopista del Sol':'Acceso Oeste Km 14', 'Distribuidora Norte':'Hipólito Yrigoyen 890, GBA Sur',
+    'YPF Quilmes':'Av. Calchaquí 1500, Quilmes', 'La Parrilla del Centro':'Corrientes 1580, CABA',
+    'Telco SA':'Maipú 255, CABA', 'Peaje Lugones':'Av. Lugones altura Km 8',
+    'Tornería Express':'Avellaneda 3301, GBA Sur', 'BP Sur':'Autopista Richieri Km 22',
+  };
+  document.getElementById('mc-dir').textContent = dirs[tx.comercio] || 'Dirección no disponible';
+  document.getElementById('mc-cond-iva').textContent = tx.tipo === 'Factura A' ? 'Responsable Inscripto' : tx.tipo === 'Factura B' ? 'Monotributista' : 'Consumidor Final';
   document.getElementById('mc-estado').innerHTML = tx.estado === 'aprobado' ?
     `<span class="badge badge-green"><span class="dot dot-green"></span>Aprobado</span>` :
     tx.estado === 'rechazado' ?
@@ -1234,21 +1306,17 @@ function fillCompModal(tx) {
     `<span class="badge badge-amber"><span class="dot dot-amber"></span>Pendiente de revisión</span>`;
   document.getElementById('mc-timeline').innerHTML = `
     <div class="tl-item"><div class="tl-dot tl-dot-blue">↑</div><div class="tl-content"><div class="tl-action">Pago registrado vía ${Math.random()>0.5?'QR':'transferencia'}</div><div class="tl-time">${tx.fecha} ${tx.hora}</div></div></div>
-    <div class="tl-item"><div class="tl-dot tl-dot-blue">📷</div><div class="tl-content"><div class="tl-action">Comprobante adjunto por operador</div><div class="tl-time">${tx.fecha} · ${parseInt(tx.hora)+1}:${tx.hora.split(':')[1]}</div></div></div>
+    <div class="tl-item"><div class="tl-dot tl-dot-blue">📷</div><div class="tl-content"><div class="tl-action">Comprobante adjunto por operador</div><div class="tl-time">${tx.fecha}</div></div></div>
     ${tx.estado !== 'pendiente' ? `<div class="tl-item"><div class="tl-dot ${tx.estado==='aprobado'?'tl-dot-green':'tl-dot-gray'}">${tx.estado==='aprobado'?'✓':'✗'}</div><div class="tl-content"><div class="tl-action">${tx.estado==='aprobado'?'Aprobado por admin':'Rechazado por admin'}</div><div class="tl-time">Hoy</div></div></div>` : ''}
   `;
   const footer = document.getElementById('mc-footer');
-  const recGroup = document.getElementById('rechazo-group');
-  recGroup.style.display = 'none';
-  if(tx.estado === 'pendiente') {
-    footer.innerHTML = `<button class="btn btn-secondary" onclick="closeModal('modal-comprobante')">Cerrar</button>
-      <button class="btn btn-danger btn-sm" onclick="showRechazo()">Rechazar</button>
-      <button class="btn btn-success btn-sm" onclick="aprobarComp()">Aprobar</button>`;
-  } else {
-    footer.innerHTML = `<button class="btn btn-secondary" onclick="closeModal('modal-comprobante')">Cerrar</button>`;
-  }
+  document.getElementById('rechazo-group').style.display = 'none';
+  footer.innerHTML = tx.estado === 'pendiente'
+    ? `<button class="btn btn-secondary" onclick="closeModal('modal-comprobante')">Cerrar</button>
+       <button class="btn btn-danger btn-sm" onclick="showRechazo()">Rechazar</button>
+       <button class="btn btn-success btn-sm" onclick="aprobarComp()">Aprobar</button>`
+    : `<button class="btn btn-secondary" onclick="closeModal('modal-comprobante')">Cerrar</button>`;
 }
-
 function showRechazo() {
   document.getElementById('rechazo-group').style.display = 'block';
   document.getElementById('mc-footer').innerHTML = `
@@ -1265,7 +1333,7 @@ function cancelRechazo() {
 function aprobarComp() {
   if(!currentTx) return;
   currentTx.estado = 'aprobado';
-  renderComp(); renderTx(); renderDashTx(); updateBadges();
+  filterTx(); renderDashTx(); updateBadges();
   closeModal('modal-comprobante');
   toast('Comprobante aprobado correctamente', 'success');
 }
@@ -1274,50 +1342,241 @@ function confirmarRechazo() {
   if(!motivo) { toast('Ingresá el motivo del rechazo', 'warning'); return; }
   if(!currentTx) return;
   currentTx.estado = 'rechazado';
-  renderComp(); renderTx(); renderDashTx(); updateBadges();
+  filterTx(); renderDashTx(); updateBadges();
   closeModal('modal-comprobante');
   toast('Comprobante rechazado. Motivo registrado.', 'success');
 }
 
-// ── OPERADORES ──
-function renderOperadores() {
-  document.getElementById('op-grid').innerHTML = operadores.map(op => {
-    const pct = Math.round((op.gastado/op.limite)*100);
+// ── RENDER DASHBOARD TX ──
+function renderDashTx() {
+  const tbody = document.getElementById('dashboard-tx-list');
+  tbody.innerHTML = transacciones.slice(0,6).map(tx => `
+    <tr>
+      <td><div class="td-operator"><div class="op-avatar">${initials(tx.op)}</div><div class="op-name">${tx.op.split(' ')[0]}</div></div></td>
+      <td style="font-size:12px;color:var(--gray-600);">${tx.comercio}</td>
+      <td><span class="badge ${catColors[tx.categoria]}">${tx.categoria}</span></td>
+      <td><span class="amount">${fmt(tx.monto)}</span></td>
+      <td>${badgeEstado(tx.estado)}</td>
+    </tr>
+  `).join('');
+}
+
+// ── RENDER SALDOS (dashboard — por cuentas) ──
+function renderSaldos() {
+  const list = document.getElementById('saldo-list');
+  list.innerHTML = cuentas.map(c => {
+    const pct = Math.round((c.gastado/c.presupuesto)*100);
     const colorClass = pct > 90 ? 'red' : pct > 70 ? 'amber' : 'blue';
+    return `<div style="margin-bottom:14px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
+        <div style="display:flex;align-items:center;gap:6px;">
+          <span style="font-size:14px;">${c.icono}</span>
+          <span style="font-size:12px;font-weight:500;">${c.nombre}</span>
+        </div>
+        <span style="font-size:11px;color:var(--gray-400);">${fmt(c.gastado)} / ${fmt(c.presupuesto)}</span>
+      </div>
+      <div class="saldo-bar-track"><div class="saldo-bar-fill ${colorClass}" style="width:${pct}%"></div></div>
+    </div>`;
+  }).join('');
+}
+
+// ── TABS GESTIÓN ──
+let gestionTab = 'cuentas';
+function setGestionTab(tab, el) {
+  gestionTab = tab;
+  document.querySelectorAll('#sec-operadores .tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('panel-cuentas').style.display = tab === 'cuentas' ? 'block' : 'none';
+  document.getElementById('panel-operadores').style.display = tab === 'operadores' ? 'block' : 'none';
+  updateTopbarCTA();
+}
+
+// ── RENDER CUENTAS ──
+function renderCuentas() {
+  document.getElementById('cuentas-grid').innerHTML = cuentas.map((c, idx) => {
+    const pct = Math.round((c.gastado/c.presupuesto)*100);
+    const colorClass = pct > 90 ? 'red' : pct > 70 ? 'amber' : 'blue';
+    const opsAsignados = operadores.filter(o => c.operadores.includes(o.id));
+    return `<div class="op-card">
+      <div class="op-card-header">
+        <div class="op-card-avatar" style="font-size:18px;background:var(--pvs-blue-light);">${c.icono}</div>
+        <div>
+          <div class="op-card-name">${c.nombre}</div>
+          <div class="op-card-role">${c.id} · ${opsAsignados.length} operador${opsAsignados.length !== 1 ? 'es' : ''}</div>
+        </div>
+        <button class="btn btn-ghost btn-sm" style="margin-left:auto;border:1px solid var(--gray-200);" onclick="editarCuenta(${idx})">
+          <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+        </button>
+      </div>
+      <div class="op-card-stats">
+        <div><div class="op-stat-label">Gastado</div><div class="op-stat-val">${fmt(c.gastado)}</div></div>
+        <div><div class="op-stat-label">Presupuesto</div><div class="op-stat-val">${fmt(c.presupuesto)}</div></div>
+      </div>
+      <div class="saldo-bar-wrap">
+        <div class="saldo-bar-track"><div class="saldo-bar-fill ${colorClass}" style="width:${Math.min(pct,100)}%"></div></div>
+        <div class="saldo-bar-label"><span>${pct}% utilizado</span><span>${fmt(c.presupuesto-c.gastado)} disponible</span></div>
+      </div>
+      <div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--gray-100);">
+        <div style="font-size:10px;font-weight:500;color:var(--gray-400);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:6px;">Operadores habilitados</div>
+        <div style="display:flex;flex-wrap:wrap;gap:4px;">
+          ${opsAsignados.map(o => `<span style="background:var(--gray-100);color:var(--gray-700);font-size:10px;padding:2px 8px;border-radius:10px;">${o.nombre.split(' ')[0]}</span>`).join('')}
+        </div>
+      </div>
+      <div class="op-card-actions" style="margin-top:12px;">
+        <button class="btn btn-secondary btn-sm" style="flex:1;" onclick="verTxCuenta('${c.nombre}')">Ver transacciones</button>
+      </div>
+    </div>`;
+  }).join('');
+  document.getElementById('badge-ncuentas').textContent = cuentas.length;
+}
+
+function editarCuenta(idx) {
+  toast('Edición de cuenta — próximamente', 'warning');
+}
+function verTxCuenta(nombre) {
+  showSection('gastos');
+  document.getElementById('filter-cat').value = nombre;
+  filterTx();
+}
+
+// ── RENDER OPERADORES ──
+function renderOperadores() {
+  document.getElementById('op-grid').innerHTML = operadores.map((op, idx) => {
+    const cuentasOp = cuentas.filter(c => op.cuentas.includes(c.id));
     return `<div class="op-card">
       <div class="op-card-header">
         <div class="op-card-avatar">${initials(op.nombre)}</div>
         <div>
           <div class="op-card-name">${op.nombre}</div>
-          <div class="op-card-role">${op.area}${op.rol ? ' · ' + op.rol : ''} · ${op.id}</div>
+          <div class="op-card-role">${op.area}${op.rol ? ' · ' + op.rol : ''}</div>
         </div>
-        <div style="margin-left:auto;">${op.activo ? '<span class="badge badge-green">Activo</span>' : '<span class="badge badge-gray">Inactivo</span>'}</div>
+        <div style="margin-left:auto;display:flex;gap:4px;align-items:center;">
+          ${op.activo ? '<span class="badge badge-green">Activo</span>' : '<span class="badge badge-gray">Inactivo</span>'}
+          <button class="btn btn-ghost btn-sm" title="Editar" onclick="openEditarOp(${idx})" style="border:1px solid var(--gray-200);margin-left:4px;">
+            <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+          </button>
+        </div>
       </div>
-      <div class="op-card-stats">
-        <div><div class="op-stat-label">Gastado</div><div class="op-stat-val">${fmt(op.gastado)}</div></div>
-        <div><div class="op-stat-label">Saldo fondeado</div><div class="op-stat-val">${fmt(op.limite)}</div></div>
+      <div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--gray-100);">
+        <div style="font-size:10px;font-weight:500;color:var(--gray-400);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:6px;">Cuentas habilitadas</div>
+        ${cuentasOp.length > 0
+          ? `<div style="display:flex;flex-direction:column;gap:5px;">
+              ${cuentasOp.map(c => {
+                const pct = Math.round((c.gastado/c.presupuesto)*100);
+                const colorClass = pct > 90 ? 'red' : pct > 70 ? 'amber' : 'blue';
+                return `<div style="display:flex;align-items:center;gap:6px;">
+                  <span style="font-size:12px;">${c.icono}</span>
+                  <span style="font-size:11px;font-weight:500;flex:1;">${c.nombre}</span>
+                  <span style="font-size:11px;color:var(--gray-400);">${fmt(c.presupuesto - c.gastado)} disp.</span>
+                </div>`;
+              }).join('')}
+            </div>`
+          : `<span style="font-size:11px;color:var(--gray-400);">Sin cuentas asignadas</span>`
+        }
       </div>
-      <div class="saldo-bar-wrap">
-        <div class="saldo-bar-track"><div class="saldo-bar-fill ${colorClass}" style="width:${pct}%"></div></div>
-        <div class="saldo-bar-label"><span>${pct}% utilizado</span><span>${fmt(op.limite-op.gastado)} disponible</span></div>
-      </div>
-      <div class="op-card-actions">
-        <button class="btn btn-secondary btn-sm" style="flex:1" onclick="openFondeoModal(${operadores.indexOf(op)})">Reasignar saldo</button>
-        <button class="btn btn-ghost btn-sm" title="Editar operador" onclick="openEditarOp(${operadores.indexOf(op)})" style="border:1px solid var(--gray-200);">
-          <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-        </button>
-        <button class="action-btn btn-secondary" title="Ver transacciones" onclick="verTxOp('${op.nombre}')" style="border:1px solid var(--gray-200);">
-          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
-        </button>
+      <div class="op-card-actions" style="margin-top:12px;">
+        <button class="btn btn-secondary btn-sm" style="flex:1;" onclick="verTxOp('${op.nombre}')">Ver transacciones</button>
       </div>
     </div>`;
   }).join('');
+  document.getElementById('badge-noperadores').textContent = operadores.filter(o=>o.activo).length;
 }
 
 function verTxOp(nombre) {
   showSection('gastos');
   document.getElementById('filter-op').value = nombre;
   filterTx();
+}
+
+// ── CREAR CUENTA ──
+function openModalCuenta() {
+  // Poblar lista de operadores en el modal
+  document.getElementById('cuenta-operadores-list').innerHTML = operadores
+    .filter(o => o.activo)
+    .map(o => `
+      <label style="display:flex;align-items:center;gap:8px;cursor:pointer;padding:5px 0;">
+        <input type="checkbox" value="${o.id}" style="cursor:pointer;">
+        <span style="font-size:13px;">${o.nombre}</span>
+        <span style="font-size:11px;color:var(--gray-400);margin-left:auto;">${o.area}</span>
+      </label>`).join('');
+  openModal('modal-cuenta');
+}
+function crearCuenta() {
+  const nombre = document.getElementById('cuenta-nombre').value.trim();
+  const icono = document.getElementById('cuenta-icono').value;
+  const presupuesto = parseFloat(document.getElementById('cuenta-presupuesto').value);
+  if(!nombre || !presupuesto) { toast('Completá nombre y presupuesto', 'warning'); return; }
+  const opSel = [...document.querySelectorAll('#cuenta-operadores-list input:checked')].map(i => i.value);
+  const nueva = {
+    id: 'C' + String(cuentas.length+1).padStart(3,'0'),
+    nombre, icono, presupuesto, gastado:0, operadores: opSel
+  };
+  cuentas.push(nueva);
+  // Actualizar cuentas en operadores seleccionados
+  opSel.forEach(opId => {
+    const op = operadores.find(o => o.id === opId);
+    if(op && !op.cuentas.includes(nueva.id)) op.cuentas.push(nueva.id);
+  });
+  closeModal('modal-cuenta');
+  renderCuentas();
+  renderOperadores();
+  renderSaldos();
+  document.getElementById('cuenta-nombre').value = '';
+  document.getElementById('cuenta-presupuesto').value = '';
+  toast(`Cuenta "${nombre}" creada`, 'success');
+}
+
+// ── CREAR OPERADOR ──
+function openModalOperador() {
+  // Poblar asignación de cuentas
+  document.getElementById('op-cuentas-asign').innerHTML = cuentas.map(c => `
+    <div style="display:flex;align-items:center;gap:10px;padding:8px 10px;background:var(--gray-50);border-radius:8px;border:1px solid var(--gray-200);">
+      <span style="font-size:16px;">${c.icono}</span>
+      <span style="font-size:12px;font-weight:500;flex:1;">${c.nombre}</span>
+      <label style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--gray-500);">
+        <input type="checkbox" value="${c.id}" id="asign-${c.id}" style="cursor:pointer;">
+        Habilitar
+      </label>
+    </div>`).join('');
+  openModal('modal-operador');
+}
+function crearOperador() {
+  const nombre = document.getElementById('op-nombre').value.trim();
+  const apellido = document.getElementById('op-apellido').value.trim();
+  const email = document.getElementById('op-email').value.trim();
+  const area = document.getElementById('op-area').value;
+  const rol = document.getElementById('op-rol').value.trim();
+  if(!nombre || !apellido || !email) { toast('Completá los campos obligatorios', 'warning'); return; }
+  const cuentasAsign = [...document.querySelectorAll('#op-cuentas-asign input:checked')].map(i => i.value);
+  const nuevoOp = {
+    id: 'OP' + String(operadores.length+1).padStart(3,'0'),
+    nombre: nombre + ' ' + apellido,
+    area: area || 'General',
+    rol, gastado:0, activo:true, cuentas: cuentasAsign
+  };
+  operadores.push(nuevoOp);
+  // Agregar operador a las cuentas seleccionadas
+  cuentasAsign.forEach(cId => {
+    const cuenta = cuentas.find(c => c.id === cId);
+    if(cuenta && !cuenta.operadores.includes(nuevoOp.id)) cuenta.operadores.push(nuevoOp.id);
+  });
+  closeModal('modal-operador');
+  const user = (nombre.toLowerCase().charAt(0) + apellido.toLowerCase() + '@bai.com').replace(/\s/g,'');
+  const pass = Math.random().toString(36).slice(2,8).toUpperCase() + Math.floor(Math.random()*100);
+  document.getElementById('cred-user').textContent = user;
+  document.getElementById('cred-pass').textContent = pass;
+  openModal('modal-creds');
+  renderOperadores();
+  renderCuentas();
+  renderSaldos();
+  ['op-nombre','op-apellido','op-email','op-tel','op-rol'].forEach(id => { const el = document.getElementById(id); if(el) el.value=''; });
+}
+
+function copiarCreds() {
+  const user = document.getElementById('cred-user').textContent;
+  const pass = document.getElementById('cred-pass').textContent;
+  navigator.clipboard.writeText(`Usuario: ${user}\nContraseña: ${pass}`).catch(()=>{});
+  toast('Credenciales copiadas', 'success');
 }
 
 // ── EDITAR OPERADOR ──
@@ -1363,74 +1622,15 @@ function darDeBaja() {
   toast(`${op.nombre} dado de baja`, 'warning');
 }
 
-// ── COPIAR DATO (CVU / Alias) ──
+// ── COPIAR DATO ──
 function copiarDato(valor, label) {
   navigator.clipboard.writeText(valor).catch(() => {});
   toast(`${label} copiado`, 'success');
 }
 
-// ── FONDEO MODAL ──
-function fillFondeoModal(idx) {
-  const op = operadores[idx];
-  document.getElementById('fondeo-op-name').textContent = op.nombre + ' · ' + op.area;
-  document.getElementById('fondeo-saldo-actual').textContent = fmt(op.limite - op.gastado);
-  document.getElementById('fondeo-limite-actual').textContent = fmt(op.limite);
-  document.getElementById('nuevo-limite').dataset.idx = idx;
-}
+// ── FONDEO MODAL (ya no aplica límite por operador — redirige a cuentas) ──
 function openFondeoModal(idx) {
-  fillFondeoModal(idx);
-  openModal('modal-fondeo');
-}
-function fondear() {
-  const input = document.getElementById('nuevo-limite');
-  const idx = parseInt(input.dataset.idx);
-  const val = parseFloat(input.value);
-  if(!val || val <= 0) { toast('Ingresá un monto válido', 'warning'); return; }
-  operadores[idx].limite = val;
-  renderOperadores();
-  renderSaldos();
-  renderFondeoList();
-  closeModal('modal-fondeo');
-  toast('Saldo reasignado exitosamente', 'success');
-}
-
-// ── CREAR OPERADOR ──
-function crearOperador() {
-  const nombre = document.getElementById('op-nombre').value.trim();
-  const apellido = document.getElementById('op-apellido').value.trim();
-  const email = document.getElementById('op-email').value.trim();
-  const saldoInicial = parseFloat(document.getElementById('op-limite').value);
-  const area = document.getElementById('op-area').value;
-  const rol = document.getElementById('op-rol').value.trim();
-  if(!nombre || !apellido || !email || !saldoInicial) {
-    toast('Completá todos los campos obligatorios', 'warning'); return;
-  }
-  const nuevoOp = {
-    id: 'OP' + String(operadores.length+1).padStart(3,'0'),
-    nombre: nombre + ' ' + apellido,
-    area: area || 'General',
-    rol: rol,
-    limite: saldoInicial,
-    gastado: 0,
-    activo: true
-  };
-  operadores.push(nuevoOp);
-  closeModal('modal-operador');
-  const user = (nombre.toLowerCase().charAt(0) + apellido.toLowerCase() + '@bai.com').replace(/\s/g,'');
-  const pass = Math.random().toString(36).slice(2,8).toUpperCase() + Math.floor(Math.random()*100);
-  document.getElementById('cred-user').textContent = user;
-  document.getElementById('cred-pass').textContent = pass;
-  openModal('modal-creds');
-  renderOperadores();
-  renderSaldos();
-  ['op-nombre','op-apellido','op-email','op-tel','op-limite','op-rol'].forEach(id => document.getElementById(id).value='');
-}
-
-function copiarCreds() {
-  const user = document.getElementById('cred-user').textContent;
-  const pass = document.getElementById('cred-pass').textContent;
-  navigator.clipboard.writeText(`Usuario: ${user}\nContraseña: ${pass}`).catch(()=>{});
-  toast('Credenciales copiadas', 'success');
+  toast('Para modificar saldos, editá la cuenta de gasto correspondiente', 'warning');
 }
 
 // ── BADGES ──
@@ -1460,7 +1660,10 @@ function toast(msg, type='success') {
 renderSaldos();
 renderDashTx();
 renderTx();
+renderCuentas();
 renderOperadores();
+// Conectar botones de modales al openModal correcto
+document.getElementById('topbar-cta').addEventListener('click', topbarCTA);
 </script>
 </body>
 </html>
