@@ -490,9 +490,38 @@ html, body {
           </div>
         </div>
         <div class="saldo-card">
-          <div class="saldo-label">Saldo disponible</div>
-          <div class="saldo-amount">$112.550</div>
+          <div class="saldo-label">Saldo propio</div>
+          <div class="saldo-amount">$24.800</div>
           <div class="saldo-cvu">BAI Mantenimiento S.A.</div>
+        </div>
+        <!-- Cuentas de gasto habilitadas — dropdown -->
+        <div style="margin-top:8px;position:relative;z-index:1;">
+          <button onclick="toggleCuentasHome()" id="btn-cuentas-home" style="width:100%;display:flex;align-items:center;justify-content:space-between;background:rgba(255,255,255,0.12);border:none;border-radius:10px;padding:10px 14px;cursor:pointer;font-family:var(--font);">
+            <div style="display:flex;align-items:center;gap:7px;">
+              <svg width="13" height="13" fill="none" stroke="rgba(255,255,255,0.8)" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>
+              <span style="color:rgba(255,255,255,0.9);font-size:12px;font-weight:500;">Cuentas de gasto habilitadas</span>
+              <span style="background:rgba(255,255,255,0.2);color:white;font-size:10px;font-weight:600;padding:1px 7px;border-radius:10px;">4</span>
+            </div>
+            <svg id="cuentas-chevron" width="14" height="14" fill="none" stroke="rgba(255,255,255,0.6)" stroke-width="2" viewBox="0 0 24 24" style="transition:transform 0.2s;"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div id="cuentas-home-list" style="display:none;margin-top:4px;display:flex;flex-direction:column;gap:4px;">
+            <div style="display:flex;align-items:center;justify-content:space-between;background:rgba(255,255,255,0.1);border-radius:8px;padding:9px 14px;">
+              <span style="color:white;font-size:12px;font-weight:500;">⛽ Combustible</span>
+              <span style="color:rgba(255,255,255,0.9);font-size:12px;font-weight:600;">$112.550</span>
+            </div>
+            <div style="display:flex;align-items:center;justify-content:space-between;background:rgba(255,255,255,0.1);border-radius:8px;padding:9px 14px;">
+              <span style="color:white;font-size:12px;font-weight:500;">🔧 Mantenimiento</span>
+              <span style="color:rgba(255,255,255,0.9);font-size:12px;font-weight:600;">$58.200</span>
+            </div>
+            <div style="display:flex;align-items:center;justify-content:space-between;background:rgba(255,255,255,0.1);border-radius:8px;padding:9px 14px;">
+              <span style="color:white;font-size:12px;font-weight:500;">🛒 Compras</span>
+              <span style="color:rgba(255,255,255,0.9);font-size:12px;font-weight:600;">$34.000</span>
+            </div>
+            <div style="display:flex;align-items:center;justify-content:space-between;background:rgba(255,255,255,0.1);border-radius:8px;padding:9px 14px;">
+              <span style="color:white;font-size:12px;font-weight:500;">🍽️ Alimentación</span>
+              <span style="color:rgba(255,255,255,0.9);font-size:12px;font-weight:600;">$21.300</span>
+            </div>
+          </div>
         </div>
       </div>
       <div class="acciones-grid">
@@ -523,6 +552,17 @@ html, body {
         </button>
       </div>
       <div class="home-body">
+        <!-- Mini banner comprobantes pendientes -->
+        <div id="banner-pendientes" onclick="go('s-historial')" style="display:flex;align-items:center;gap:10px;background:var(--amber-l);border:1px solid #FDE68A;border-radius:10px;padding:10px 12px;margin-bottom:14px;cursor:pointer;transition:background 0.15s;">
+          <div style="width:28px;height:28px;background:var(--amber);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+            <svg width="14" height="14" fill="none" stroke="white" stroke-width="2.5" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14,2 14,8 20,8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+          </div>
+          <div style="flex:1;">
+            <div style="font-size:12px;font-weight:600;color:var(--amber);" id="banner-pendientes-txt">2 comprobantes pendientes de cargar</div>
+            <div style="font-size:10px;color:#A16207;margin-top:1px;">Tocá para ver el historial</div>
+          </div>
+          <svg width="14" height="14" fill="none" stroke="var(--amber)" stroke-width="2" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+        </div>
         <div class="home-section-title">
           Últimos movimientos
           <button class="home-section-link" onclick="go('s-historial')">Ver todos</button>
@@ -634,13 +674,47 @@ html, body {
         <div class="confirm-amount-box">
           <div class="cam-label">Vas a pagar</div>
           <div class="cam-amount">$47.500,00</div>
-          <div class="cam-saldo">Saldo disponible: $112.550,00</div>
         </div>
-        <div class="confirm-detail">
-          <div class="cd-row">
-            <span class="cd-label">Desde</span>
-            <span class="cd-val">Billetera BAI Mantenimiento</span>
+
+        <!-- SELECTOR DE ORIGEN DE FONDOS -->
+        <div style="margin-bottom:16px;">
+          <div style="font-size:11px;font-weight:600;color:var(--gray-500);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px;">Pagás desde</div>
+          <div style="display:flex;flex-direction:column;gap:6px;" id="origen-selector">
+
+            <label style="display:flex;align-items:center;gap:10px;padding:11px 14px;border-radius:10px;border:1.5px solid var(--gray-200);cursor:pointer;transition:border-color 0.15s;" id="opt-propio" onclick="selectOrigen('propio')">
+              <div style="width:18px;height:18px;border-radius:50%;border:2px solid var(--gray-300);flex-shrink:0;display:flex;align-items:center;justify-content:center;" id="radio-propio"></div>
+              <div style="flex:1;">
+                <div style="font-size:13px;font-weight:500;color:var(--gray-900);">Saldo propio</div>
+                <div style="font-size:11px;color:var(--gray-400);">$24.800 disponible</div>
+              </div>
+            </label>
+
+            <label style="display:flex;align-items:center;gap:10px;padding:11px 14px;border-radius:10px;border:1.5px solid var(--pvs-blue);background:var(--pvs-xlight);cursor:pointer;" id="opt-combustible" onclick="selectOrigen('combustible')">
+              <div style="width:18px;height:18px;border-radius:50%;border:2px solid var(--pvs-blue);flex-shrink:0;display:flex;align-items:center;justify-content:center;background:var(--pvs-blue);" id="radio-combustible">
+                <div style="width:7px;height:7px;border-radius:50%;background:white;"></div>
+              </div>
+              <div style="flex:1;">
+                <div style="font-size:13px;font-weight:500;color:var(--gray-900);">⛽ Combustible</div>
+                <div style="font-size:11px;color:var(--gray-400);">$112.550 disponible · BAI Logística</div>
+              </div>
+            </label>
+
+            <label style="display:flex;align-items:center;gap:10px;padding:11px 14px;border-radius:10px;border:1.5px solid var(--gray-200);cursor:pointer;transition:border-color 0.15s;" id="opt-mantenimiento" onclick="selectOrigen('mantenimiento')">
+              <div style="width:18px;height:18px;border-radius:50%;border:2px solid var(--gray-300);flex-shrink:0;display:flex;align-items:center;justify-content:center;" id="radio-mantenimiento"></div>
+              <div style="flex:1;">
+                <div style="font-size:13px;font-weight:500;color:var(--gray-900);">🔧 Mantenimiento</div>
+                <div style="font-size:11px;color:var(--gray-400);">$58.200 disponible · BAI Operaciones</div>
+              </div>
+            </label>
+
           </div>
+          <!-- Aviso cuando elige saldo propio -->
+          <div id="aviso-propio" style="display:none;margin-top:8px;background:var(--amber-l);border-radius:8px;padding:9px 12px;font-size:11px;color:var(--amber);">
+            Al pagar con saldo propio no se solicitará comprobante. El gasto no quedará registrado en ninguna cuenta de la empresa.
+          </div>
+        </div>
+
+        <div class="confirm-detail">
           <div class="cd-row">
             <span class="cd-label">CUIT empresa</span>
             <span class="cd-val">30-71234567-8</span>
@@ -744,18 +818,18 @@ html, body {
             <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
           </button>
           <span class="hist-title">Historial</span>
-          <!-- Filtro categoría -->
+          <!-- Filtro tipo de gasto -->
           <div style="margin-left:auto;position:relative;">
             <button onclick="toggleCatFilter()" style="display:flex;align-items:center;gap:4px;background:rgba(255,255,255,0.15);border:none;border-radius:8px;padding:5px 10px;color:white;font-family:var(--font);font-size:11px;font-weight:500;cursor:pointer;" id="cat-filter-btn">
               <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
-              <span id="cat-filter-label">Categoría</span>
+              <span id="cat-filter-label">Tipo de gasto</span>
             </button>
-            <div id="cat-dropdown" style="display:none;position:absolute;top:34px;right:0;background:white;border-radius:10px;box-shadow:0 4px 16px rgba(0,0,0,0.15);width:160px;z-index:200;overflow:hidden;">
-              <div onclick="setCat('',this)" style="padding:10px 14px;font-size:12px;cursor:pointer;color:var(--gray-700);background:var(--pvs-light);font-weight:500;">Todas</div>
-              <div onclick="setCat('Transporte',this)" style="padding:10px 14px;font-size:12px;cursor:pointer;color:var(--gray-700);border-top:1px solid var(--gray-100);">⛽ Transporte</div>
-              <div onclick="setCat('Gastronomía',this)" style="padding:10px 14px;font-size:12px;cursor:pointer;color:var(--gray-700);border-top:1px solid var(--gray-100);">🍔 Gastronomía</div>
-              <div onclick="setCat('Suministros',this)" style="padding:10px 14px;font-size:12px;cursor:pointer;color:var(--gray-700);border-top:1px solid var(--gray-100);">🔧 Suministros</div>
-              <div onclick="setCat('Servicios',this)" style="padding:10px 14px;font-size:12px;cursor:pointer;color:var(--gray-700);border-top:1px solid var(--gray-100);">💡 Servicios</div>
+            <div id="cat-dropdown" style="display:none;position:absolute;top:34px;right:0;background:white;border-radius:10px;box-shadow:0 4px 16px rgba(0,0,0,0.15);width:175px;z-index:200;overflow:hidden;">
+              <div onclick="setCat('',this)" style="padding:10px 14px;font-size:12px;cursor:pointer;color:var(--gray-700);background:var(--pvs-light);font-weight:500;">Todos</div>
+              <div onclick="setCat('Transporte',this)" style="padding:10px 14px;font-size:12px;cursor:pointer;color:var(--gray-700);border-top:1px solid var(--gray-100);">⛽ Combustible</div>
+              <div onclick="setCat('Suministros',this)" style="padding:10px 14px;font-size:12px;cursor:pointer;color:var(--gray-700);border-top:1px solid var(--gray-100);">🔧 Mantenimiento</div>
+              <div onclick="setCat('Compras',this)" style="padding:10px 14px;font-size:12px;cursor:pointer;color:var(--gray-700);border-top:1px solid var(--gray-100);">🛒 Compras</div>
+              <div onclick="setCat('Gastronomía',this)" style="padding:10px 14px;font-size:12px;cursor:pointer;color:var(--gray-700);border-top:1px solid var(--gray-100);">🍽️ Alimentación</div>
             </div>
           </div>
         </div>
@@ -925,11 +999,11 @@ html, body {
 <script>
 // ── DATA ──
 const txData = [
-  { id:1, comercio:'YPF San Martín', cat:'Transporte', icon:'⛽', bg:'#FEF9C3', monto:47500, fecha:'Hoy', hora:'09:14', estado:'pendiente', ocr:{ fecha:'20/05/2026', cuit:'30-71234567-8', razonSocial:'YPF S.A.', tipo:'Factura A', nro:'0001-00128934', monto:'$47.500,00', iva:'$6.714,88', itc:'$8.264,46', iibb:'$1.187,50', percepciones:'$594,75' } },
-  { id:2, comercio:"McDonald's Belgrano", cat:'Gastronomía', icon:'🍔', bg:'#DCFCE7', monto:8400, fecha:'Ayer', hora:'13:22', estado:'aprobado', ocr:{ fecha:'19/05/2026', cuit:'30-65432198-0', razonSocial:"Arcos Dorados S.A.", tipo:'Factura B', nro:'0002-00043210', monto:'$8.400,00', iva:'-', itc:'-', iibb:'$210,00', percepciones:'-' } },
+  { id:1, comercio:'YPF San Martín', cat:'Transporte', icon:'⛽', bg:'#FEF9C3', monto:47500, fecha:'Hoy', hora:'09:14', estado:'pendiente', ocr:{ fecha:'20/05/2026', cuit:'30-71234567-8', razonSocial:'YPF S.A.', direccion:'Av. San Martín 1240, CABA', condIva:'Responsable Inscripto', tipo:'Factura A', nro:'0001-00128934', monto:'$47.500,00', iva:'$6.714,88', itc:'$8.264,46', iibb:'$1.187,50', percepciones:'$594,75' } },
+  { id:2, comercio:"McDonald's Belgrano", cat:'Gastronomía', icon:'🍔', bg:'#DCFCE7', monto:8400, fecha:'Ayer', hora:'13:22', estado:'aprobado', ocr:{ fecha:'19/05/2026', cuit:'30-65432198-0', razonSocial:"Arcos Dorados S.A.", direccion:'Av. Cabildo 2300, CABA', condIva:'Responsable Inscripto', tipo:'Factura B', nro:'0002-00043210', monto:'$8.400,00', iva:'-', itc:'-', iibb:'$210,00', percepciones:'-' } },
   { id:3, comercio:'Autopista del Sol', cat:'Transporte', icon:'🛣️', bg:'#DBEAFE', monto:3200, fecha:'Ayer', hora:'08:45', estado:'pendiente', ocr:null },
-  { id:4, comercio:'Ferretería Central', cat:'Suministros', icon:'🔧', bg:'#F3E8FF', monto:23600, fecha:'18 may', hora:'10:20', estado:'revision', ocr:{ fecha:'18/05/2026', cuit:'20-12345678-9', razonSocial:'Central Herramientas S.R.L.', tipo:'Factura A', nro:'0001-00009871', monto:'$23.600,00', iva:'$3.338,57', itc:'-', iibb:'$590,00', percepciones:'$236,00' } },
-  { id:5, comercio:'La Parrilla del Centro', cat:'Gastronomía', icon:'🍖', bg:'#DCFCE7', monto:12500, fecha:'18 may', hora:'13:30', estado:'aprobado', ocr:{ fecha:'18/05/2026', cuit:'27-98765432-1', razonSocial:'Gastronomía Centro S.A.', tipo:'Factura B', nro:'0001-00056781', monto:'$12.500,00', iva:'-', itc:'-', iibb:'$312,50', percepciones:'-' } },
+  { id:4, comercio:'Ferretería Central', cat:'Suministros', icon:'🔧', bg:'#F3E8FF', monto:23600, fecha:'18 may', hora:'10:20', estado:'revision', ocr:{ fecha:'18/05/2026', cuit:'20-12345678-9', razonSocial:'Central Herramientas S.R.L.', direccion:'Ruta 8 Km 32, GBA Oeste', condIva:'Responsable Inscripto', tipo:'Factura A', nro:'0001-00009871', monto:'$23.600,00', iva:'$3.338,57', itc:'-', iibb:'$590,00', percepciones:'$236,00' } },
+  { id:5, comercio:'La Parrilla del Centro', cat:'Gastronomía', icon:'🍖', bg:'#DCFCE7', monto:12500, fecha:'18 may', hora:'13:30', estado:'aprobado', ocr:{ fecha:'18/05/2026', cuit:'27-98765432-1', razonSocial:'Gastronomía Centro S.A.', direccion:'Corrientes 1580, CABA', condIva:'Responsable Inscripto', tipo:'Factura B', nro:'0001-00056781', monto:'$12.500,00', iva:'-', itc:'-', iibb:'$312,50', percepciones:'-' } },
 ];
 
 // ── NAV ──
@@ -944,8 +1018,58 @@ function go(id) {
   if(id === 's-historial') renderHist();
 }
 
+// ── SELECTOR ORIGEN DE FONDOS ──
+let origenSeleccionado = 'combustible';
+function selectOrigen(origen) {
+  origenSeleccionado = origen;
+  const opciones = ['propio', 'combustible', 'mantenimiento'];
+  opciones.forEach(op => {
+    const label = document.getElementById('opt-' + op);
+    const radio = document.getElementById('radio-' + op);
+    if(!label || !radio) return;
+    if(op === origen) {
+      label.style.borderColor = 'var(--pvs-blue)';
+      label.style.background = 'var(--pvs-xlight)';
+      radio.style.background = 'var(--pvs-blue)';
+      radio.style.border = '2px solid var(--pvs-blue)';
+      radio.innerHTML = '<div style="width:7px;height:7px;border-radius:50%;background:white;"></div>';
+    } else {
+      label.style.borderColor = 'var(--gray-200)';
+      label.style.background = 'white';
+      radio.style.background = 'white';
+      radio.style.border = '2px solid var(--gray-300)';
+      radio.innerHTML = '';
+    }
+  });
+  const aviso = document.getElementById('aviso-propio');
+  if(aviso) aviso.style.display = origen === 'propio' ? 'block' : 'none';
+}
+
 // ── PAGAR ──
-function doPagar() { go('s-procesando'); setTimeout(() => go('s-exito'), 2000); }
+function doPagar() {
+  go('s-procesando');
+  setTimeout(() => {
+    go('s-exito');
+    // Si pagó con saldo propio, ocultar sección de adjuntar comprobante
+    const adjSection = document.getElementById('adj-section');
+    const adjSkip = document.getElementById('adj-skip-btn');
+    const adjSuccess = document.getElementById('adj-success');
+    if(origenSeleccionado === 'propio') {
+      if(adjSection) adjSection.style.display = 'none';
+      if(adjSkip) adjSkip.style.display = 'none';
+      if(adjSuccess) { adjSuccess.style.display = 'none'; }
+      // Mostrar mensaje informativo
+      const exitoSub = document.querySelector('#s-exito .exito-sub');
+      if(exitoSub) exitoSub.textContent = 'Pago procesado desde tu saldo personal.';
+    } else {
+      if(adjSection) adjSection.style.display = 'block';
+      if(adjSkip) adjSkip.style.display = 'block';
+      if(adjSuccess) adjSuccess.style.display = 'none';
+      const exitoSub = document.querySelector('#s-exito .exito-sub');
+      if(exitoSub) exitoSub.textContent = 'El pago fue procesado exitosamente';
+    }
+  }, 2000);
+}
 
 // ── ADJUNTAR POST-PAGO ──
 function adjuntarTicket() { showAdjSuccess(); }
@@ -1052,10 +1176,18 @@ function openDetalle(id) {
   const ocrEl = document.getElementById('det-ocr-campos');
   if(tx.ocr) {
     const campos = [
-      ['Fecha', tx.ocr.fecha], ['CUIT emisor', tx.ocr.cuit], ['Razón Social', tx.ocr.razonSocial],
-      ['Tipo comprobante', tx.ocr.tipo], ['Nro. comprobante', tx.ocr.nro],
-      ['Monto total', tx.ocr.monto], ['IVA', tx.ocr.iva], ['ITC combustible', tx.ocr.itc],
-      ['Ret. IIBB', tx.ocr.iibb], ['Percepciones', tx.ocr.percepciones],
+      ['Fecha', tx.ocr.fecha],
+      ['CUIT emisor', tx.ocr.cuit],
+      ['Razón Social', tx.ocr.razonSocial],
+      ['Dirección', tx.ocr.direccion],
+      ['Condición IVA', tx.ocr.condIva],
+      ['Tipo comprobante', tx.ocr.tipo],
+      ['Nro. comprobante', tx.ocr.nro],
+      ['Monto total', tx.ocr.monto],
+      ['IVA', tx.ocr.iva],
+      ['ITC combustible', tx.ocr.itc],
+      ['Ret. IIBB', tx.ocr.iibb],
+      ['Percepciones', tx.ocr.percepciones],
     ];
     ocrEl.innerHTML = campos.filter(([,v]) => v && v !== '-').map(([k,v]) => `
       <div class="ocr-row"><span class="ocr-key">${k}</span><span class="ocr-val">${v}</span></div>
@@ -1103,6 +1235,16 @@ function showHint(msg) {
   setTimeout(() => h.classList.remove('show'), 2800);
 }
 
+// ── TOGGLE CUENTAS HOME ──
+let cuentasHomeOpen = false;
+function toggleCuentasHome() {
+  cuentasHomeOpen = !cuentasHomeOpen;
+  const list = document.getElementById('cuentas-home-list');
+  const chevron = document.getElementById('cuentas-chevron');
+  if(list) list.style.display = cuentasHomeOpen ? 'flex' : 'none';
+  if(chevron) chevron.style.transform = cuentasHomeOpen ? 'rotate(180deg)' : 'rotate(0deg)';
+}
+
 // ── HOME: ÚLTIMOS MOVIMIENTOS ──
 const estadoBadgeHome = {
   pendiente: `<span style="background:var(--amber-l);color:var(--amber);font-size:10px;padding:2px 6px;border-radius:10px;font-weight:500;">Sin comprobante</span>`,
@@ -1112,6 +1254,14 @@ const estadoBadgeHome = {
 };
 
 function renderHomeActividad() {
+  // Banner de pendientes
+  const pendientes = txData.filter(t => t.estado === 'pendiente').length;
+  const banner = document.getElementById('banner-pendientes');
+  const bannerTxt = document.getElementById('banner-pendientes-txt');
+  if(banner) banner.style.display = pendientes > 0 ? 'flex' : 'none';
+  if(bannerTxt) bannerTxt.textContent = `${pendientes} comprobante${pendientes !== 1 ? 's' : ''} pendiente${pendientes !== 1 ? 's' : ''} de cargar`;
+
+  // Últimos movimientos
   const container = document.getElementById('home-actividad');
   const ultimas = txData.slice(0, 4);
   container.innerHTML = ultimas.map(tx => `
