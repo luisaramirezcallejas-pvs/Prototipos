@@ -1,0 +1,365 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+.proto-wrap{max-width:980px;margin:0 auto;padding:1rem 0}
+.device{border:2px solid #222;border-radius:8px;overflow:hidden;background:#fff}
+.topbar{background:#1a1a1a;color:#fff;padding:10px 20px;display:flex;align-items:center;gap:12px}
+.topbar-logo{font-weight:600;font-size:15px;letter-spacing:.5px;color:#fff}
+.topbar-sub{font-size:12px;color:#888;margin-left:6px}
+.topbar-right{margin-left:auto;display:flex;align-items:center;gap:12px}
+.topbar-user{font-size:12px;color:#aaa;display:flex;align-items:center;gap:6px}
+.sidebar{width:210px;border-right:1.5px solid #ddd;padding:16px 0;flex-shrink:0;background:#f9f9f9;min-height:600px}
+.sidebar-logo{padding:8px 16px 16px;border-bottom:1px solid #e8e8e8;margin-bottom:8px}
+.sidebar-logo-text{font-size:11px;font-weight:600;color:#888;letter-spacing:.6px;text-transform:uppercase}
+.sidebar-logo-name{font-size:14px;font-weight:500;color:#111;margin-top:2px}
+.s-item{padding:9px 16px;font-size:13px;color:#555;cursor:pointer;display:flex;align-items:center;gap:8px;border-left:3px solid transparent}
+.s-item:hover{background:#f0f0f0;color:#111}
+.s-item.active{background:#ebebeb;border-left:3px solid #222;font-weight:500;color:#111}
+.s-item i{font-size:16px;color:#888}
+.s-item.active i{color:#222}
+.s-section{font-size:10px;color:#aaa;padding:14px 16px 4px;letter-spacing:.8px;text-transform:uppercase}
+.main{flex:1;padding:24px 28px;background:#fff;overflow-y:auto;max-height:600px}
+.layout{display:flex;min-height:600px}
+.screen{display:none}
+.screen.active{display:block}
+.page-title{font-size:18px;font-weight:500;color:#111;margin-bottom:4px}
+.page-sub{font-size:12px;color:#666;margin-bottom:20px}
+.btn-primary{padding:9px 18px;border:1.5px solid #222;background:#222;font-size:13px;font-weight:500;cursor:pointer;border-radius:4px;color:#fff;display:inline-flex;align-items:center;gap:6px}
+.btn-primary:hover{background:#111}
+.btn-outline{padding:9px 18px;border:1.5px solid #222;background:#fff;font-size:13px;font-weight:500;cursor:pointer;border-radius:4px;color:#222;display:inline-flex;align-items:center;gap:6px}
+.btn-outline:hover{background:#f0f0f0}
+.btn-ghost{padding:7px 14px;border:1px solid #ccc;background:#fff;font-size:12px;cursor:pointer;border-radius:4px;color:#444;display:inline-flex;align-items:center;gap:6px}
+.btn-ghost:hover{background:#f5f5f5}
+.kpi-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px}
+.kpi{border:1.5px solid #ddd;border-radius:4px;padding:14px 16px;background:#fafafa}
+.kpi-label{font-size:11px;color:#888;text-transform:uppercase;letter-spacing:.4px;margin-bottom:6px}
+.kpi-val{font-size:22px;font-weight:600;color:#111}
+.kpi-sub{font-size:11px;color:#999;margin-top:3px}
+.tab-row{display:flex;border-bottom:2px solid #e8e8e8;margin-bottom:16px}
+.tab{padding:8px 18px;font-size:13px;color:#888;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-2px;display:flex;align-items:center;gap:6px}
+.tab.active{color:#111;font-weight:500;border-bottom:2px solid #222}
+.panel{display:none}
+.panel.active{display:block}
+.filter-row{display:flex;gap:10px;margin-bottom:14px;align-items:center;flex-wrap:wrap}
+.filter-select{border:1px solid #ddd;border-radius:4px;padding:7px 12px;font-size:12px;color:#444;background:#fff;cursor:pointer}
+.search-input{border:1px solid #ddd;border-radius:4px;padding:7px 12px;font-size:12px;color:#444;flex:1;min-width:160px;outline:none}
+.search-input:focus{border-color:#999}
+.table-wrap{border:1.5px solid #ddd;border-radius:4px;overflow:hidden;margin-bottom:16px}
+.t-hdr{display:grid;background:#f5f5f5;padding:8px 14px;font-size:11px;font-weight:500;color:#666;letter-spacing:.4px;text-transform:uppercase;border-bottom:1px solid #ddd}
+.t-row{display:grid;padding:10px 14px;border-top:1px solid #ebebeb;font-size:13px;color:#333;align-items:center;cursor:pointer}
+.t-row:hover{background:#fafafa}
+.t-row.expandable.open{background:#f7f7f7}
+.t-detail{display:none;padding:10px 14px 14px;background:#f7f7f7;border-top:1px solid #e8e8e8;font-size:12px;color:#555}
+.t-detail.open{display:block}
+.badge{display:inline-block;padding:2px 8px;border-radius:2px;font-size:11px;font-weight:500;border:1px solid}
+.badge-done{background:#f0f0f0;color:#444;border-color:#ccc}
+.badge-pending{background:#fff;color:#222;border-color:#222}
+.badge-ok{background:#e8f5e8;color:#2a6e2a;border-color:#b8d8b8}
+.badge-on{background:#222;color:#fff;border-color:#222;cursor:pointer}
+.badge-off{background:#fff;color:#888;border-color:#bbb;cursor:pointer}
+.card{border:1.5px solid #ddd;border-radius:4px;padding:16px;margin-bottom:12px}
+.card-title{font-size:13px;font-weight:500;color:#111;margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.card-row{display:flex;justify-content:space-between;align-items:center;font-size:13px;color:#444;padding:5px 0;border-bottom:1px solid #f0f0f0}
+.card-row:last-child{border-bottom:none}
+.comercio-row{display:flex;align-items:center;gap:12px;padding:10px 14px;border-top:1px solid #ebebeb;font-size:13px}
+.comercio-row:first-child{border-top:none}
+.c-avatar{width:32px;height:32px;border-radius:50%;background:#e8e8e8;border:1px solid #ccc;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:#555;flex-shrink:0}
+.c-info{flex:1}
+.c-name{font-size:13px;font-weight:500;color:#111}
+.c-cuit{font-size:11px;color:#888;margin-top:1px}
+.toggle-wrap{display:flex;align-items:center;gap:8px}
+.toggle{width:36px;height:20px;border-radius:10px;border:1.5px solid #222;background:#222;cursor:pointer;position:relative;flex-shrink:0;transition:background .15s}
+.toggle.off{background:#fff;border-color:#ccc}
+.toggle-knob{position:absolute;top:2px;right:2px;width:14px;height:14px;border-radius:50%;background:#fff;transition:right .15s}
+.toggle.off .toggle-knob{right:auto;left:2px;background:#bbb}
+.toggle-label{font-size:11px;color:#888}
+.watermark{text-align:center;font-size:10px;color:#bbb;letter-spacing:.5px;padding:10px;border-top:1px solid #ebebeb;margin-top:16px}
+.detalle-header{display:flex;align-items:center;gap:10px;margin-bottom:16px;padding-bottom:12px;border-bottom:1.5px solid #e8e8e8}
+.back-btn{display:flex;align-items:center;gap:6px;font-size:12px;color:#666;cursor:pointer;border:none;background:none;padding:0}
+.back-btn:hover{color:#111}
+.stat-mini{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border:1px solid #ddd;border-radius:3px;font-size:12px;color:#555;background:#f9f9f9}
+.proto-label{text-align:center;font-size:11px;color:#aaa;letter-spacing:1px;text-transform:uppercase;padding:8px;border-bottom:1px solid #eee;background:#f9f9f9}
+</style>
+
+<div class="proto-wrap">
+<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;padding:0 4px">
+  <span style="font-size:12px;color:var(--text-secondary)">Panel del mayorista · Mis Negocios</span>
+  <span style="font-size:11px;color:var(--text-muted);border:1px solid var(--border);padding:3px 10px;border-radius:3px">DRAFT — PROTOTIPO</span>
+</div>
+
+<div class="device">
+  <div class="proto-label">Prototipo · Cesión de Cupones · Panel Mayorista (Mis Negocios)</div>
+  <div class="topbar">
+    <div>
+      <div class="topbar-logo">Mis Negocios <span class="topbar-sub">· PVS</span></div>
+    </div>
+    <div class="topbar-right">
+      <span style="font-size:11px;color:#666;border:1px solid #444;padding:2px 8px;border-radius:3px">BAI / Vitalcan</span>
+      <div class="topbar-user"><i class="ti ti-user-circle" style="font-size:16px" aria-hidden="true"></i>Enzo Marsilio</div>
+    </div>
+  </div>
+  <div class="layout">
+    <div class="sidebar">
+      <div class="sidebar-logo">
+        <div class="sidebar-logo-text">Empresa</div>
+        <div class="sidebar-logo-name">BAI / Vitalcan</div>
+      </div>
+      <div class="s-item" onclick="nav('dashboard')"><i class="ti ti-layout-dashboard" aria-hidden="true"></i>Resumen</div>
+      <div class="s-section">Cesión de cupones</div>
+      <div class="s-item active" id="nav-cesion" onclick="nav('cesion')"><i class="ti ti-arrows-transfer-up" aria-hidden="true"></i>Cupones recibidos</div>
+      <div class="s-item" id="nav-comercios" onclick="nav('comercios')"><i class="ti ti-building-store" aria-hidden="true"></i>Mis comercios</div>
+      <div class="s-section">Plataforma</div>
+      <div class="s-item"><i class="ti ti-chart-bar" aria-hidden="true"></i>Reportes</div>
+      <div class="s-item"><i class="ti ti-users" aria-hidden="true"></i>Usuarios</div>
+      <div class="s-item"><i class="ti ti-settings" aria-hidden="true"></i>Configuración</div>
+    </div>
+
+    <div class="main">
+
+      <!-- PANTALLA: CUPONES RECIBIDOS -->
+      <div class="screen active" id="screen-cesion">
+        <div class="page-title">Cupones recibidos</div>
+        <div class="page-sub">Transferencias de saldo pendiente recibidas de tus comercios habilitados.</div>
+
+        <div class="kpi-grid">
+          <div class="kpi">
+            <div class="kpi-label">Total recibido (agosto)</div>
+            <div class="kpi-val">$ 8.340</div>
+            <div class="kpi-sub">5 operaciones</div>
+          </div>
+          <div class="kpi">
+            <div class="kpi-label">Pendiente de acreditar</div>
+            <div class="kpi-val">$ 3.820</div>
+            <div class="kpi-sub">2 cesiones en curso</div>
+          </div>
+          <div class="kpi">
+            <div class="kpi-label">Comercios activos</div>
+            <div class="kpi-val">4</div>
+            <div class="kpi-sub">de 6 habilitados</div>
+          </div>
+        </div>
+
+        <div class="tab-row">
+          <div class="tab active" id="tab-historial" onclick="showTab('historial')"><i class="ti ti-list" aria-hidden="true"></i>Historial</div>
+          <div class="tab" id="tab-acreditacion" onclick="showTab('acreditacion')"><i class="ti ti-calendar" aria-hidden="true"></i>Próximas acreditaciones</div>
+        </div>
+
+        <!-- PANEL HISTORIAL -->
+        <div class="panel active" id="panel-historial">
+          <div class="filter-row">
+            <input class="search-input" placeholder="Buscar por comercio o N° de operación...">
+            <select class="filter-select"><option>Todos los estados</option><option>Acreditado</option><option>Pendiente</option></select>
+            <select class="filter-select"><option>Agosto 2026</option><option>Julio 2026</option></select>
+          </div>
+          <div class="table-wrap">
+            <div class="t-hdr" style="grid-template-columns:2fr 1.2fr 1fr 1fr 1fr">
+              <span>Comercio</span><span>Operación</span><span>Días cedidos</span><span>Monto neto</span><span>Estado</span>
+            </div>
+            <div class="t-row expandable" style="grid-template-columns:2fr 1.2fr 1fr 1fr 1fr" onclick="toggleRow('r1')">
+              <span style="display:flex;align-items:center;gap:8px"><span class="c-avatar">SC</span>Super Cerro</span>
+              <span style="font-family:monospace;font-size:11px">#CES-0041</span>
+              <span>14/08 · 15/08</span>
+              <span style="font-weight:500">$ 1.720,00</span>
+              <span><span class="badge badge-pending">Pendiente</span></span>
+            </div>
+            <div class="t-detail" id="det-r1">
+              <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:8px">
+                <div><div style="font-size:10px;color:#aaa;text-transform:uppercase;letter-spacing:.4px;margin-bottom:3px">CUIT comercio</div><div>30-88774421-0</div></div>
+                <div><div style="font-size:10px;color:#aaa;text-transform:uppercase;letter-spacing:.4px;margin-bottom:3px">Fecha cesión</div><div>12/08/2026 · 10:14 hs</div></div>
+                <div><div style="font-size:10px;color:#aaa;text-transform:uppercase;letter-spacing:.4px;margin-bottom:3px">Webhook a Sigma</div><div><span class="badge badge-ok">Enviado ✓</span></div></div>
+              </div>
+              <table style="width:100%;font-size:12px;border-collapse:collapse">
+                <tr style="background:#efefef"><th style="padding:5px 8px;text-align:left;font-weight:500">Día</th><th style="padding:5px 8px;text-align:right;font-weight:500">Monto neto</th><th style="padding:5px 8px;text-align:right;font-weight:500">Acreditación estimada</th><th style="padding:5px 8px;text-align:right;font-weight:500">Estado</th></tr>
+                <tr style="border-top:1px solid #e8e8e8"><td style="padding:5px 8px">14/08/2026</td><td style="padding:5px 8px;text-align:right">$ 620,00</td><td style="padding:5px 8px;text-align:right">14/08/2026</td><td style="padding:5px 8px;text-align:right"><span class="badge badge-pending">Pendiente</span></td></tr>
+                <tr style="border-top:1px solid #e8e8e8"><td style="padding:5px 8px">15/08/2026</td><td style="padding:5px 8px;text-align:right">$ 1.100,00</td><td style="padding:5px 8px;text-align:right">15/08/2026</td><td style="padding:5px 8px;text-align:right"><span class="badge badge-pending">Pendiente</span></td></tr>
+              </table>
+              <div style="margin-top:10px;display:flex;gap:8px">
+                <button class="btn-ghost"><i class="ti ti-download" aria-hidden="true"></i>Descargar comprobante</button>
+              </div>
+            </div>
+
+            <div class="t-row expandable" style="grid-template-columns:2fr 1.2fr 1fr 1fr 1fr" onclick="toggleRow('r2')">
+              <span style="display:flex;align-items:center;gap:8px"><span class="c-avatar">AM</span>Almacén Mitre</span>
+              <span style="font-family:monospace;font-size:11px">#CES-0039</span>
+              <span>05/08 · 06/08</span>
+              <span style="font-weight:500">$ 2.100,00</span>
+              <span><span class="badge badge-pending">Pendiente</span></span>
+            </div>
+            <div class="t-detail" id="det-r2">
+              <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:8px">
+                <div><div style="font-size:10px;color:#aaa;text-transform:uppercase;letter-spacing:.4px;margin-bottom:3px">CUIT comercio</div><div>20-33214556-7</div></div>
+                <div><div style="font-size:10px;color:#aaa;text-transform:uppercase;letter-spacing:.4px;margin-bottom:3px">Fecha cesión</div><div>05/08/2026 · 14:30 hs</div></div>
+                <div><div style="font-size:10px;color:#aaa;text-transform:uppercase;letter-spacing:.4px;margin-bottom:3px">Webhook a Sigma</div><div><span class="badge badge-ok">Enviado ✓</span></div></div>
+              </div>
+              <div style="margin-top:8px;display:flex;gap:8px">
+                <button class="btn-ghost"><i class="ti ti-download" aria-hidden="true"></i>Descargar comprobante</button>
+              </div>
+            </div>
+
+            <div class="t-row" style="grid-template-columns:2fr 1.2fr 1fr 1fr 1fr">
+              <span style="display:flex;align-items:center;gap:8px"><span class="c-avatar">PS</span>Pet Shop Palermo</span>
+              <span style="font-family:monospace;font-size:11px">#CES-0031</span>
+              <span>28/07</span>
+              <span style="font-weight:500">$ 640,00</span>
+              <span><span class="badge badge-done">Acreditado</span></span>
+            </div>
+            <div class="t-row" style="grid-template-columns:2fr 1.2fr 1fr 1fr 1fr">
+              <span style="display:flex;align-items:center;gap:8px"><span class="c-avatar">SC</span>Super Cerro</span>
+              <span style="font-family:monospace;font-size:11px">#CES-0027</span>
+              <span>20/07 · 21/07 · 22/07</span>
+              <span style="font-weight:500">$ 3.880,00</span>
+              <span><span class="badge badge-done">Acreditado</span></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- PANEL PRÓXIMAS ACREDITACIONES -->
+        <div class="panel" id="panel-acreditacion">
+          <div class="table-wrap">
+            <div class="t-hdr" style="grid-template-columns:1.5fr 1.5fr 1fr 1fr">
+              <span>Comercio</span><span>Operación</span><span>Fecha acreditación</span><span>Monto</span>
+            </div>
+            <div class="t-row" style="grid-template-columns:1.5fr 1.5fr 1fr 1fr">
+              <span style="display:flex;align-items:center;gap:8px"><span class="c-avatar">SC</span>Super Cerro</span>
+              <span style="font-family:monospace;font-size:11px">#CES-0041 · día 14/08</span>
+              <span style="font-weight:500;color:#111">14/08/2026</span>
+              <span>$ 620,00</span>
+            </div>
+            <div class="t-row" style="grid-template-columns:1.5fr 1.5fr 1fr 1fr">
+              <span style="display:flex;align-items:center;gap:8px"><span class="c-avatar">SC</span>Super Cerro</span>
+              <span style="font-family:monospace;font-size:11px">#CES-0041 · día 15/08</span>
+              <span style="font-weight:500;color:#111">15/08/2026</span>
+              <span>$ 1.100,00</span>
+            </div>
+            <div class="t-row" style="grid-template-columns:1.5fr 1.5fr 1fr 1fr">
+              <span style="display:flex;align-items:center;gap:8px"><span class="c-avatar">AM</span>Almacén Mitre</span>
+              <span style="font-family:monospace;font-size:11px">#CES-0039 · días 05-06/08</span>
+              <span style="font-weight:500;color:#111">15/08/2026</span>
+              <span>$ 2.100,00</span>
+            </div>
+          </div>
+          <div style="text-align:center;padding:12px;font-size:12px;color:#bbb">Total pendiente de acreditar: <strong style="color:#555">$ 3.820,00</strong></div>
+        </div>
+
+        <div class="watermark">Prototipo · PVS Product Discovery · Agosto 2026</div>
+      </div>
+
+      <!-- PANTALLA: MIS COMERCIOS -->
+      <div class="screen" id="screen-comercios">
+        <div class="page-title">Mis comercios</div>
+        <div class="page-sub">Gestioná qué comercios pueden cederte cupones. Solo vés los comercios que ya tienen cuenta en PVS.</div>
+
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+          <div style="display:flex;gap:8px">
+            <span class="stat-mini"><i class="ti ti-check" aria-hidden="true"></i>4 activos</span>
+            <span class="stat-mini"><i class="ti ti-x" aria-hidden="true"></i>2 inactivos</span>
+          </div>
+          <div style="font-size:12px;color:#888">¿Falta un comercio? Contactá a soporte PVS.</div>
+        </div>
+
+        <div class="card" style="padding:0">
+          <div style="padding:12px 14px;background:#f5f5f5;border-bottom:1px solid #e8e8e8">
+            <div style="display:grid;grid-template-columns:2fr 1.5fr 1fr 1fr;font-size:11px;font-weight:500;color:#666;letter-spacing:.4px;text-transform:uppercase">
+              <span>Comercio</span><span>CUIT</span><span>Última cesión</span><span style="text-align:center">Habilitado</span>
+            </div>
+          </div>
+          <div id="comercio-list"></div>
+        </div>
+
+        <div class="card" style="background:#f9f9f9">
+          <div class="card-title"><i class="ti ti-info-circle" style="font-size:15px" aria-hidden="true"></i>¿Cómo funciona la habilitación?</div>
+          <div style="font-size:12px;color:#666;line-height:1.6">
+            Podés activar o desactivar cada comercio cuando quieras. Un comercio <strong>desactivado</strong> no puede enviarte cupones, aunque esté en tu lista. Esta acción aplica de inmediato — no afecta las cesiones ya realizadas.
+          </div>
+        </div>
+
+        <div class="watermark">Prototipo · PVS Product Discovery · Agosto 2026</div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div style="display:flex;justify-content:center;gap:6px;margin-top:10px;flex-wrap:wrap">
+  <button class="btn-ghost" onclick="nav('cesion')" id="pill-cesion" style="font-weight:600">① Cupones recibidos</button>
+  <button class="btn-ghost" onclick="nav('comercios')" id="pill-comercios">② Mis comercios</button>
+</div>
+</div>
+
+<script>
+const COMERCIOS=[
+  {init:'SC',name:'Super Cerro',cuit:'30-88774421-0',last:'12/08/2026',active:true},
+  {init:'AM',name:'Almacén Mitre',cuit:'20-33214556-7',last:'05/08/2026',active:true},
+  {init:'PS',name:'Pet Shop Palermo',cuit:'27-55432109-3',last:'28/07/2026',active:true},
+  {init:'LA',name:'La Favorita',cuit:'23-44123890-4',last:'18/07/2026',active:true},
+  {init:'VE',name:'Verdulería El Sol',cuit:'30-77654320-1',last:'—',active:false},
+  {init:'CA',name:'Carnicería Norte',cuit:'20-66543210-8',last:'—',active:false},
+];
+
+function renderComercios(){
+  const list=document.getElementById('comercio-list');
+  list.innerHTML='';
+  COMERCIOS.forEach((c,i)=>{
+    const row=document.createElement('div');
+    row.className='comercio-row';
+    row.style.display='grid';
+    row.style.gridTemplateColumns='2fr 1.5fr 1fr 1fr';
+    row.style.alignItems='center';
+    row.innerHTML=`
+      <div style="display:flex;align-items:center;gap:10px">
+        <div class="c-avatar" style="${!c.active?'opacity:.5':''}">${c.init}</div>
+        <div>
+          <div class="c-name" style="${!c.active?'color:#aaa':''}">${c.name}</div>
+          <div class="c-cuit">${c.cuit}</div>
+        </div>
+      </div>
+      <div style="font-size:12px;color:#888">${c.last}</div>
+      <div></div>
+      <div style="display:flex;justify-content:center">
+        <div class="toggle-wrap" style="flex-direction:column;align-items:center;gap:4px">
+          <div class="toggle ${c.active?'':'off'}" onclick="toggleCom(${i})" id="tg${i}">
+            <div class="toggle-knob" id="tk${i}"></div>
+          </div>
+          <div class="toggle-label" id="tl${i}">${c.active?'Activo':'Inactivo'}</div>
+        </div>
+      </div>
+    `;
+    list.appendChild(row);
+  });
+}
+
+function toggleCom(i){
+  COMERCIOS[i].active=!COMERCIOS[i].active;
+  const tg=document.getElementById('tg'+i);
+  const tl=document.getElementById('tl'+i);
+  tg.classList.toggle('off',!COMERCIOS[i].active);
+  tl.textContent=COMERCIOS[i].active?'Activo':'Inactivo';
+  renderComercios();
+}
+
+function showTab(tab){
+  ['historial','acreditacion'].forEach(t=>{
+    document.getElementById('tab-'+t).classList.toggle('active',t===tab);
+    document.getElementById('panel-'+t).classList.toggle('active',t===tab);
+  });
+}
+
+function toggleRow(id){
+  const det=document.getElementById('det-'+id);
+  if(!det)return;
+  det.classList.toggle('open');
+}
+
+function nav(screen){
+  ['cesion','comercios'].forEach(s=>{
+    const el=document.getElementById('screen-'+s);
+    const nav=document.getElementById('nav-'+s);
+    const pill=document.getElementById('pill-'+s);
+    if(el)el.classList.toggle('active',s===screen);
+    if(nav)nav.classList.toggle('active',s===screen);
+    if(pill)pill.style.fontWeight=s===screen?'600':'';
+  });
+}
+
+renderComercios();
+</script>

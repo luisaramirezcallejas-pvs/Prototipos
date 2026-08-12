@@ -1,0 +1,507 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+.proto-wrap{max-width:960px;margin:0 auto;padding:1rem 0}
+.device{border:2px solid #222;border-radius:8px;overflow:hidden;background:#fff}
+.topbar{background:#1a1a1a;color:#fff;padding:10px 16px;display:flex;align-items:center;gap:12px}
+.topbar .logo{font-weight:600;font-size:15px;letter-spacing:.5px;color:#fff}
+.topbar .username{font-size:12px;color:#aaa;margin-left:auto}
+.sidebar{width:200px;border-right:1.5px solid #ddd;padding:16px 0;flex-shrink:0;background:#f9f9f9}
+.sidebar-item{padding:9px 16px;font-size:13px;color:#444;cursor:pointer;display:flex;align-items:center;gap:8px;border-left:3px solid transparent}
+.sidebar-item.active{background:#ebebeb;border-left:3px solid #222;font-weight:500;color:#111}
+.sidebar-item i{font-size:16px;color:#666}
+.sidebar-section{font-size:10px;color:#999;padding:14px 16px 4px;letter-spacing:.8px;text-transform:uppercase}
+.main{flex:1;padding:24px 28px;background:#fff;overflow-y:auto;max-height:620px}
+.layout{display:flex;min-height:520px}
+.screen{display:none}
+.screen.active{display:block}
+.page-title{font-size:18px;font-weight:500;color:#111;margin-bottom:4px}
+.page-sub{font-size:12px;color:#666;margin-bottom:20px;display:flex;align-items:center;gap:6px}
+.saldo-total{font-size:28px;font-weight:600;color:#111;margin-bottom:20px;padding-bottom:16px;border-bottom:1.5px solid #e0e0e0}
+.saldo-label{font-size:13px;color:#666;margin-bottom:4px}
+.btn-row{display:flex;gap:12px;margin-bottom:24px}
+.btn-outline{padding:9px 18px;border:1.5px solid #222;background:#fff;font-size:13px;font-weight:500;cursor:pointer;border-radius:4px;color:#222;display:flex;align-items:center;gap:6px}
+.btn-outline:hover{background:#f0f0f0}
+.btn-primary{padding:9px 18px;border:1.5px solid #222;background:#222;font-size:13px;font-weight:500;cursor:pointer;border-radius:4px;color:#fff;display:flex;align-items:center;gap:6px}
+.btn-primary:hover{background:#111}
+.btn-ghost{padding:7px 14px;border:1px solid #ccc;background:#fff;font-size:12px;cursor:pointer;border-radius:4px;color:#444}
+.btn-ghost:hover{background:#f5f5f5}
+.table-wrap{border:1.5px solid #ddd;border-radius:4px;overflow:hidden}
+.table-hdr{display:grid;grid-template-columns:1fr 1fr 1fr;background:#f5f5f5;padding:8px 12px;font-size:11px;font-weight:500;color:#555;letter-spacing:.4px;text-transform:uppercase}
+.table-row{display:grid;grid-template-columns:1fr 1fr 1fr;padding:9px 12px;border-top:1px solid #ebebeb;font-size:13px;color:#333;align-items:center}
+.badge{display:inline-block;padding:2px 8px;border-radius:2px;font-size:11px;font-weight:500;border:1px solid}
+.badge-gray{background:#f0f0f0;color:#555;border-color:#ccc}
+.badge-dark{background:#222;color:#fff;border-color:#222}
+.badge-outline{background:#fff;color:#222;border-color:#222}
+.divider{border:none;border-top:1.5px solid #e8e8e8;margin:16px 0}
+.step-indicator{display:flex;align-items:center;gap:0;margin-bottom:8px}
+.step-dot{width:26px;height:26px;border-radius:50%;border:2px solid #ccc;background:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:#aaa;flex-shrink:0}
+.step-dot.done{background:#222;border-color:#222;color:#fff}
+.step-dot.current{border-color:#222;color:#222}
+.step-line{flex:1;height:2px;background:#ddd}
+.step-line.done{background:#222}
+.step-labels{display:flex;justify-content:space-between;margin-bottom:16px;margin-top:4px}
+.step-label{font-size:10px;color:#aaa;text-align:center;flex:1}
+.step-label.current{color:#222;font-weight:500}
+.step-label.done-label{color:#555}
+.card{border:1.5px solid #ddd;border-radius:4px;padding:16px;margin-bottom:12px}
+.card-title{font-size:13px;font-weight:500;color:#111;margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.card-row{display:flex;justify-content:space-between;align-items:center;font-size:13px;color:#444;padding:4px 0}
+.card-row.total{font-weight:600;color:#111;border-top:1px solid #e8e8e8;margin-top:8px;padding-top:10px}
+.mayorista-card{border:1.5px solid #ddd;border-radius:4px;padding:14px 16px;margin-bottom:8px;cursor:pointer;display:flex;align-items:center;gap:12px}
+.mayorista-card:hover{border-color:#999}
+.mayorista-card.selected{border-color:#222;border-width:2px;background:#f9f9f9}
+.mayorista-avatar{width:38px;height:38px;border-radius:50%;background:#e8e8e8;border:1.5px solid #ccc;display:flex;align-items:center;justify-content:center;font-weight:600;font-size:13px;color:#444;flex-shrink:0}
+.mayorista-name{font-size:13px;font-weight:500;color:#111}
+.mayorista-sub{font-size:11px;color:#777;margin-top:2px}
+.radio-circle{width:18px;height:18px;border-radius:50%;border:2px solid #ccc;flex-shrink:0}
+.radio-circle.checked{border-color:#222;background:#222;box-shadow:inset 0 0 0 3px #fff}
+.warn-box{background:#f9f9f9;border:1.5px solid #ddd;border-radius:4px;padding:14px 16px;margin-bottom:14px;font-size:12px;color:#555;display:flex;gap:10px;align-items:flex-start;border-left:3px solid #222}
+.warn-box i{font-size:16px;color:#222;margin-top:1px;flex-shrink:0}
+.token-input{width:100%;border:1.5px solid #ccc;border-radius:4px;padding:10px 12px;font-size:15px;letter-spacing:4px;text-align:center;color:#222;outline:none;margin-bottom:16px}
+.token-input:focus{border-color:#222}
+.success-icon{width:52px;height:52px;border-radius:50%;border:2.5px solid #222;background:#fff;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;font-size:22px}
+.tag{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border:1px solid #ccc;border-radius:2px;font-size:11px;color:#555;background:#f9f9f9}
+.watermark{text-align:center;font-size:10px;color:#bbb;letter-spacing:.5px;padding:10px;border-top:1px solid #ebebeb;margin-top:16px}
+.nav-actions{display:flex;justify-content:space-between;align-items:center;margin-top:20px;padding-top:14px;border-top:1.5px solid #e8e8e8}
+.checkbox-row{display:flex;align-items:center;gap:10px;padding:10px 12px;border:1.5px solid #ddd;border-radius:4px;margin-bottom:6px;cursor:pointer}
+.checkbox-row:hover{border-color:#999}
+.checkbox-row.selected{border-color:#222;background:#f9f9f9}
+.checkbox-row.disabled{opacity:.4;cursor:not-allowed}
+.checkbox-box{width:18px;height:18px;border:2px solid #ccc;border-radius:2px;flex-shrink:0;display:flex;align-items:center;justify-content:center}
+.checkbox-box.checked{background:#222;border-color:#222;color:#fff}
+.day-info{flex:1}
+.day-date{font-size:13px;font-weight:500;color:#111}
+.day-amount{font-size:13px;font-weight:500;color:#111}
+.day-tag{font-size:11px;color:#777;margin-top:1px}
+.proto-label{text-align:center;font-size:11px;color:#aaa;letter-spacing:1px;text-transform:uppercase;padding:8px;border-bottom:1px solid #eee;background:#f9f9f9}
+.msg-box{border:1.5px solid #222;border-radius:4px;padding:16px;margin-bottom:14px;background:#f9f9f9;position:relative}
+.msg-box-header{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.msg-box-avatar{width:32px;height:32px;border-radius:50%;background:#222;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:#fff;flex-shrink:0}
+.msg-box-from{font-size:12px;font-weight:500;color:#111}
+.msg-box-sub{font-size:11px;color:#888}
+.msg-box-body{font-size:13px;color:#333;line-height:1.5;margin-bottom:12px}
+.msg-box-actions{display:flex;gap:8px}
+.hist-row{display:flex;align-items:center;gap:12px;padding:12px;border:1px solid #e8e8e8;border-radius:4px;margin-bottom:6px;cursor:pointer}
+.hist-row:hover{background:#fafafa}
+.hist-dot{width:32px;height:32px;border-radius:50%;border:1.5px solid #222;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
+.hist-info{flex:1}
+.hist-title{font-size:13px;font-weight:500;color:#111}
+.hist-sub{font-size:11px;color:#777;margin-top:2px}
+.hist-amount{font-size:14px;font-weight:500;color:#111}
+.hist-status{font-size:10px;color:#666;margin-top:2px;text-align:right}
+.tab-row{display:flex;border-bottom:2px solid #e8e8e8;margin-bottom:16px}
+.tab{padding:8px 16px;font-size:13px;color:#888;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-2px}
+.tab.active{color:#111;font-weight:500;border-bottom:2px solid #222}
+</style>
+
+<div class="proto-wrap">
+<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;padding:0 4px">
+  <span style="font-size:12px;color:var(--text-secondary)">Flujo del comercio · 6 pantallas</span>
+  <span style="font-size:11px;color:var(--text-muted);border:1px solid var(--border);padding:3px 10px;border-radius:3px">DRAFT — PROTOTIPO</span>
+</div>
+
+<div class="device">
+  <div class="proto-label">Prototipo · Cesión de Cupones · Flujo del Comercio</div>
+  <div class="topbar">
+    <div class="logo">PVS</div>
+    <span style="font-size:12px;color:#999">¡Hola, Ota Carlos Andrés!</span>
+    <div class="username">515420001 ▾</div>
+  </div>
+  <div class="layout">
+    <div class="sidebar">
+      <div class="sidebar-item active"><i class="ti ti-home" aria-hidden="true"></i>Inicio</div>
+      <div class="sidebar-section">Accesos frecuentes</div>
+      <div class="sidebar-item"><i class="ti ti-credit-card" aria-hidden="true"></i>Cuenta corriente</div>
+      <div class="sidebar-item"><i class="ti ti-activity" aria-hidden="true"></i>Actividad</div>
+      <div class="sidebar-item"><i class="ti ti-chart-bar" aria-hidden="true"></i>Total de ventas</div>
+      <div style="height:1px;background:#e0e0e0;margin:10px 0"></div>
+      <div class="sidebar-item"><i class="ti ti-qrcode" aria-hidden="true"></i>Cobrar con QR</div>
+      <div class="sidebar-item"><i class="ti ti-send" aria-hidden="true"></i>Pagar</div>
+      <div class="sidebar-item"><i class="ti ti-world" aria-hidden="true"></i>Transferencias</div>
+      <div class="sidebar-item"><i class="ti ti-building-store" aria-hidden="true"></i>Mi comercio</div>
+    </div>
+    <div class="main">
+
+      <!-- S0: SALDO PENDIENTE -->
+      <div class="screen active" id="s0">
+        <div class="page-title">Saldo pendiente</div>
+        <div class="page-sub"><i class="ti ti-info-circle" aria-hidden="true"></i>Importes sin comisiones descontadas para los próximos 31 días.</div>
+        <div class="saldo-label">Saldo pendiente:</div>
+        <div class="saldo-total">$ 4.820,00</div>
+        <div class="btn-row">
+          <button class="btn-outline"><i class="ti ti-clock-dollar" aria-hidden="true"></i>Cobro anticipado</button>
+          <button class="btn-primary" onclick="go('hist')"><i class="ti ti-arrow-right-circle" aria-hidden="true"></i>Ceder cupones</button>
+        </div>
+        <div class="table-wrap">
+          <div class="table-hdr"><span>Fecha</span><span>Importe</span><span></span></div>
+          <div class="table-row"><span>13/08/2026</span><span style="color:#aaa">—</span><span></span></div>
+          <div class="table-row"><span style="font-weight:500">14/08/2026</span><span style="font-weight:500">$620,00</span><span><span class="badge badge-gray">Débito</span></span></div>
+          <div class="table-row"><span style="font-weight:500">15/08/2026</span><span style="font-weight:500">$1.100,00</span><span><span class="badge badge-gray">Crédito</span></span></div>
+          <div class="table-row"><span>16/08/2026</span><span style="color:#aaa">—</span><span></span></div>
+          <div class="table-row"><span style="font-weight:500">17/08/2026</span><span style="font-weight:500">$950,00</span><span><span class="badge badge-gray">Débito</span></span></div>
+          <div class="table-row"><span>18/08/2026</span><span style="color:#aaa">—</span><span></span></div>
+          <div class="table-row"><span style="font-weight:500">19/08/2026</span><span style="font-weight:500">$2.150,00</span><span><span class="badge badge-gray">Crédito</span></span></div>
+          <div class="table-row"><span>20/08/2026</span><span style="color:#aaa">—</span><span></span></div>
+        </div>
+        <div class="watermark">Prototipo · PVS Product Discovery · Agosto 2026</div>
+      </div>
+
+      <!-- S-HIST: HISTORIAL DE CESIONES -->
+      <div class="screen" id="shist">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px">
+          <button class="btn-ghost" onclick="go(0)"><i class="ti ti-arrow-left" aria-hidden="true"></i> Saldo pendiente</button>
+        </div>
+        <div class="page-title">Cesión de cupones</div>
+        <div class="page-sub">Historial de transferencias realizadas a distribuidores.</div>
+
+        <div class="tab-row">
+          <div class="tab active" id="tab-hist" onclick="showTab('hist')">Historial</div>
+          <div class="tab" id="tab-nueva" onclick="showTab('nueva')">Nueva cesión</div>
+        </div>
+
+        <div id="panel-hist">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+            <span style="font-size:12px;color:#888">3 operaciones</span>
+            <button class="btn-primary" style="padding:7px 14px;font-size:12px" onclick="go(1)"><i class="ti ti-plus" aria-hidden="true"></i> Nueva cesión</button>
+          </div>
+          <div class="hist-row">
+            <div class="hist-dot"><i class="ti ti-check" style="font-size:14px;color:#222" aria-hidden="true"></i></div>
+            <div class="hist-info">
+              <div class="hist-title">BAI / Vitalcan</div>
+              <div class="hist-sub">05/08/2026 · 2 días cedidos · #CES-20260805-0039</div>
+            </div>
+            <div style="text-align:right">
+              <div class="hist-amount">$ 1.820,00</div>
+              <div class="hist-status"><span class="badge badge-gray">Acreditado</span></div>
+            </div>
+          </div>
+          <div class="hist-row">
+            <div class="hist-dot"><i class="ti ti-check" style="font-size:14px;color:#222" aria-hidden="true"></i></div>
+            <div class="hist-info">
+              <div class="hist-title">BAI / Vitalcan</div>
+              <div class="hist-sub">28/07/2026 · 1 día cedido · #CES-20260728-0031</div>
+            </div>
+            <div style="text-align:right">
+              <div class="hist-amount">$ 640,00</div>
+              <div class="hist-status"><span class="badge badge-gray">Acreditado</span></div>
+            </div>
+          </div>
+          <div class="hist-row">
+            <div class="hist-dot"><i class="ti ti-clock" style="font-size:14px;color:#888" aria-hidden="true"></i></div>
+            <div class="hist-info">
+              <div class="hist-title">Distribuidora Pérez</div>
+              <div class="hist-sub">20/07/2026 · 3 días cedidos · #CES-20260720-0027</div>
+            </div>
+            <div style="text-align:right">
+              <div class="hist-amount">$ 3.100,00</div>
+              <div class="hist-status"><span class="badge badge-outline">Pendiente</span></div>
+            </div>
+          </div>
+          <div style="text-align:center;padding:12px;font-size:12px;color:#bbb">Fin del historial</div>
+        </div>
+
+        <div id="panel-nueva" style="display:none">
+          <div style="text-align:center;padding:32px 0 16px">
+            <div style="width:48px;height:48px;border:1.5px solid #ccc;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 12px"><i class="ti ti-arrow-right-circle" style="font-size:22px;color:#888" aria-hidden="true"></i></div>
+            <div style="font-size:14px;font-weight:500;color:#111;margin-bottom:6px">Iniciá una nueva cesión</div>
+            <div style="font-size:12px;color:#888;margin-bottom:20px">Seleccioná un distribuidor y elegí los días a transferir.</div>
+            <button class="btn-primary" onclick="go(1)"><i class="ti ti-plus" aria-hidden="true"></i> Nueva cesión</button>
+          </div>
+        </div>
+
+        <div class="watermark">Prototipo · PVS Product Discovery · Agosto 2026</div>
+      </div>
+
+      <!-- S1: SELECCIÓN MAYORISTA -->
+      <div class="screen" id="s1">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px">
+          <button class="btn-ghost" onclick="go('hist')"><i class="ti ti-arrow-left" aria-hidden="true"></i> Volver</button>
+          <span style="font-size:12px;color:#999">Cesión de cupones</span>
+        </div>
+        <div class="page-title">Seleccioná el distribuidor</div>
+        <div class="page-sub">Solo aparecen distribuidores habilitados para tu cuenta.</div>
+        <div id="sb1"></div>
+        <div class="mayorista-card selected" id="mc1" onclick="selMay(1)">
+          <div class="mayorista-avatar">BA</div>
+          <div style="flex:1">
+            <div class="mayorista-name">BAI / Vitalcan</div>
+            <div class="mayorista-sub">Acepta cupones de hasta 25 días · Sin arancel adicional</div>
+          </div>
+          <div class="radio-circle checked" id="r1"></div>
+        </div>
+        <div class="mayorista-card" id="mc2" onclick="selMay(2)">
+          <div class="mayorista-avatar" style="background:#efefef">PE</div>
+          <div style="flex:1">
+            <div class="mayorista-name">Distribuidora Pérez</div>
+            <div class="mayorista-sub">Acepta cupones de hasta 10 días</div>
+          </div>
+          <div class="radio-circle" id="r2"></div>
+        </div>
+        <div class="nav-actions">
+          <button class="btn-ghost" onclick="go('hist')">Cancelar</button>
+          <button class="btn-primary" onclick="go(2)">Continuar <i class="ti ti-arrow-right" aria-hidden="true"></i></button>
+        </div>
+        <div class="watermark">Prototipo · PVS Product Discovery · Agosto 2026</div>
+      </div>
+
+      <!-- S2: SELECCIÓN DE DÍAS -->
+      <div class="screen" id="s2">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px">
+          <button class="btn-ghost" onclick="go(1)"><i class="ti ti-arrow-left" aria-hidden="true"></i> Volver</button>
+          <span style="font-size:12px;color:#999">BAI / Vitalcan</span>
+        </div>
+        <div class="page-title">Elegí los días a ceder</div>
+        <div class="page-sub">Seleccioná del más próximo al más lejano. El importe es el neto ya descontadas comisiones.</div>
+        <div id="sb2"></div>
+        <div class="warn-box"><i class="ti ti-info-circle" aria-hidden="true"></i><span>Podés ceder uno o más días. El orden es siempre del más próximo al más lejano — no podés seleccionar un día posterior sin los anteriores.</span></div>
+
+        <div class="checkbox-row selected" id="d1" onclick="toggleDay(1,2)">
+          <div class="checkbox-box checked" id="cb1"><i class="ti ti-check" style="font-size:12px" aria-hidden="true"></i></div>
+          <div class="day-info"><div class="day-date">14/08/2026 <span class="tag">más próximo</span></div><div class="day-tag">Débito · 3 transacciones</div></div>
+          <div class="day-amount">$ 620,00</div>
+        </div>
+        <div class="checkbox-row" id="d2" onclick="toggleDay(2,3)">
+          <div class="checkbox-box" id="cb2"></div>
+          <div class="day-info"><div class="day-date">15/08/2026</div><div class="day-tag">Crédito · 5 transacciones</div></div>
+          <div class="day-amount">$ 1.100,00</div>
+        </div>
+        <div class="checkbox-row disabled" id="d3">
+          <div class="checkbox-box" id="cb3"></div>
+          <div class="day-info"><div class="day-date">17/08/2026</div><div class="day-tag">Débito · 2 transacciones</div></div>
+          <div class="day-amount">$ 950,00</div>
+        </div>
+        <div class="checkbox-row disabled" id="d4">
+          <div class="checkbox-box" id="cb4"></div>
+          <div class="day-info"><div class="day-date">19/08/2026</div><div class="day-tag">Crédito · 8 transacciones</div></div>
+          <div class="day-amount">$ 2.150,00</div>
+        </div>
+
+        <div class="divider"></div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
+          <span style="font-size:13px;color:#666">Días seleccionados</span>
+          <span style="font-size:13px;color:#555" id="days-count">1 día</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <span style="font-size:13px;color:#666">Total a transferir</span>
+          <span style="font-size:20px;font-weight:600;color:#111" id="total-amt">$ 620,00</span>
+        </div>
+
+        <div class="nav-actions">
+          <button class="btn-ghost" onclick="go(1)">Volver</button>
+          <button class="btn-primary" id="btn-revisar" onclick="go(3)">Revisar transferencia <i class="ti ti-arrow-right" aria-hidden="true"></i></button>
+        </div>
+        <div class="watermark">Prototipo · PVS Product Discovery · Agosto 2026</div>
+      </div>
+
+      <!-- S3: CONFIRMACIÓN -->
+      <div class="screen" id="s3">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px">
+          <button class="btn-ghost" onclick="go(2)"><i class="ti ti-arrow-left" aria-hidden="true"></i> Volver</button>
+          <span style="font-size:12px;color:#999">BAI / Vitalcan → Confirmación</span>
+        </div>
+        <div class="page-title">Revisá antes de confirmar</div>
+        <div class="page-sub">Esta operación no se puede revertir una vez confirmada.</div>
+        <div id="sb3"></div>
+        <div class="card">
+          <div class="card-title">Resumen de la cesión</div>
+          <div class="card-row"><span style="color:#666">Distribuidor</span><span style="font-weight:500">BAI / Vitalcan</span></div>
+          <div class="card-row"><span style="color:#666">Días cedidos</span><span id="resumen-dias">—</span></div>
+          <div class="card-row"><span style="color:#666">Transacciones incluidas</span><span id="resumen-trx">—</span></div>
+          <div class="card-row total"><span>Monto neto a transferir</span><span id="resumen-total">—</span></div>
+        </div>
+        <div class="card">
+          <div class="card-title">Acreditación estimada en BAI</div>
+          <div id="resumen-acred" style="font-size:13px;color:#444"></div>
+        </div>
+        <div class="warn-box" style="border-left-color:#999;background:#fff8f8">
+          <i class="ti ti-alert-triangle" style="color:#555" aria-hidden="true"></i>
+          <span><strong>Esta operación es irrevocable.</strong> Una vez que confirmés con tu token, los cupones se transfieren a BAI y no podés recuperarlos desde PVS.</span>
+        </div>
+        <div style="margin-bottom:4px;font-size:13px;color:#444;font-weight:500">Ingresá tu token para confirmar</div>
+        <div style="margin-bottom:8px;font-size:11px;color:#888">El mismo token que usás para transferencias</div>
+        <input class="token-input" type="password" placeholder="• • • • • •" maxlength="6" id="token-field">
+        <div class="nav-actions">
+          <button class="btn-ghost" onclick="go(2)">Volver</button>
+          <button class="btn-primary" onclick="confirmar()">Confirmar cesión <i class="ti ti-lock" aria-hidden="true"></i></button>
+        </div>
+        <div class="watermark">Prototipo · PVS Product Discovery · Agosto 2026</div>
+      </div>
+
+      <!-- S4: ÉXITO -->
+      <div class="screen" id="s4">
+        <div style="text-align:center;padding:16px 0 8px">
+          <div class="success-icon"><i class="ti ti-check" style="color:#222" aria-hidden="true"></i></div>
+          <div style="font-size:18px;font-weight:500;color:#111;margin-bottom:4px">Cupones cedidos</div>
+          <div style="font-size:13px;color:#666;margin-bottom:16px">La transferencia se realizó correctamente. BAI ya puede ver los cupones en su panel.</div>
+        </div>
+        <div id="sb4"></div>
+
+        <!-- MENSAJE PERSONALIZADO BAI -->
+        <div class="msg-box">
+          <div class="msg-box-header">
+            <div class="msg-box-avatar">BA</div>
+            <div>
+              <div class="msg-box-from">BAI / Vitalcan</div>
+              <div class="msg-box-sub">Mensaje automático al recibir tus cupones</div>
+            </div>
+          </div>
+          <div class="msg-box-body">
+            "¡Gracias! Recibimos tu pago con cupones. Un representante de BAI se va a poner en contacto con vos para coordinar tu próximo pedido.<br><br>
+            Si querés hacerlo vos directamente, podés llamar al <strong>(011) 4321-5678</strong> o escribirnos por WhatsApp."
+          </div>
+          <div class="msg-box-actions">
+            <button class="btn-ghost" style="font-size:12px;display:flex;align-items:center;gap:5px"><i class="ti ti-phone" aria-hidden="true"></i>(011) 4321-5678</button>
+            <button class="btn-ghost" style="font-size:12px;display:flex;align-items:center;gap:5px"><i class="ti ti-brand-whatsapp" aria-hidden="true"></i>WhatsApp</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title"><i class="ti ti-file-check" style="font-size:16px" aria-hidden="true"></i>Comprobante de cesión</div>
+          <div class="card-row"><span style="color:#666">N° de operación</span><span style="font-family:monospace;font-size:12px">#CES-20260812-0041</span></div>
+          <div class="card-row"><span style="color:#666">Distribuidor</span><span>BAI / Vitalcan</span></div>
+          <div class="card-row"><span style="color:#666">Días cedidos</span><span id="ok-dias">—</span></div>
+          <div class="card-row"><span style="color:#666">Monto transferido</span><span style="font-weight:500" id="ok-total">—</span></div>
+          <div class="card-row"><span style="color:#666">Fecha de cesión</span><span>12/08/2026 · 10:14 hs</span></div>
+        </div>
+
+        <div style="display:flex;gap:10px;margin-bottom:12px">
+          <button class="btn-ghost" style="flex:1;justify-content:center;display:flex;align-items:center;gap:6px"><i class="ti ti-download" aria-hidden="true"></i>Descargar comprobante</button>
+          <button class="btn-ghost" style="flex:1;justify-content:center;display:flex;align-items:center;gap:6px" onclick="go('hist')"><i class="ti ti-history" aria-hidden="true"></i>Ver historial</button>
+        </div>
+        <button class="btn-outline" style="width:100%;justify-content:center" onclick="go(0)"><i class="ti ti-arrow-left" aria-hidden="true"></i>Volver al inicio</button>
+        <div class="watermark">Prototipo · PVS Product Discovery · Agosto 2026</div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div style="display:flex;justify-content:center;gap:6px;margin-top:10px;flex-wrap:wrap">
+  <button class="btn-ghost" onclick="go(0)" id="pill0">① Saldo pendiente</button>
+  <button class="btn-ghost" onclick="go('hist')" id="pillhist">② Historial</button>
+  <button class="btn-ghost" onclick="go(1)" id="pill1">③ Mayorista</button>
+  <button class="btn-ghost" onclick="go(2)" id="pill2">④ Días</button>
+  <button class="btn-ghost" onclick="go(3)" id="pill3">⑤ Confirmar</button>
+  <button class="btn-ghost" onclick="go(4)" id="pill4">⑥ Éxito + Mensaje</button>
+</div>
+</div>
+
+<script>
+const STEPS=['Saldo pendiente','Distribuidor','Días','Confirmación','¡Listo!'];
+function mkBar(cur){
+  let h='<div class="step-indicator">';
+  for(let i=0;i<5;i++){
+    h+=`<div class="step-dot ${i<cur?'done':i===cur?'current':''}">${i<cur?'<i class="ti ti-check" style="font-size:11px"></i>':i+1}</div>`;
+    if(i<4)h+=`<div class="step-line ${i<cur?'done':''}"></div>`;
+  }
+  h+='</div><div class="step-labels">';
+  for(let i=0;i<5;i++)h+=`<div class="step-label ${i===cur?'current':i<cur?'done-label':''}">${STEPS[i]}</div>`;
+  return h+'</div>';
+}
+
+const DAYS=[
+  {date:'14/08/2026',amt:620,trx:'Débito · 3 transacciones'},
+  {date:'15/08/2026',amt:1100,trx:'Crédito · 5 transacciones'},
+  {date:'17/08/2026',amt:950,trx:'Débito · 2 transacciones'},
+  {date:'19/08/2026',amt:2150,trx:'Crédito · 8 transacciones'},
+];
+let sel=[true,false,false,false];
+
+function fmtARS(n){return '$ '+n.toLocaleString('es-AR',{minimumFractionDigits:2,maximumFractionDigits:2});}
+
+function updateDayUI(){
+  let total=0,cnt=0;
+  for(let i=0;i<4;i++){
+    const row=document.getElementById('d'+(i+1));
+    const cb=document.getElementById('cb'+(i+1));
+    if(sel[i]){
+      row.classList.add('selected');
+      row.classList.remove('disabled');
+      cb.classList.add('checked');
+      cb.innerHTML='<i class="ti ti-check" style="font-size:12px"></i>';
+      total+=DAYS[i].amt;
+      cnt++;
+    } else {
+      row.classList.remove('selected');
+      cb.classList.remove('checked');
+      cb.innerHTML='';
+      const prevSel=i===0?true:sel[i-1];
+      if(!prevSel){row.classList.add('disabled');}
+      else{row.classList.remove('disabled');}
+    }
+  }
+  document.getElementById('total-amt').textContent=fmtARS(total);
+  document.getElementById('days-count').textContent=cnt+' día'+(cnt!==1?'s':'');
+}
+
+function toggleDay(n,next){
+  const i=n-1;
+  if(document.getElementById('d'+n).classList.contains('disabled'))return;
+  if(sel[i]){
+    for(let j=i;j<4;j++)sel[j]=false;
+  } else {
+    sel[i]=true;
+  }
+  updateDayUI();
+}
+
+function updateResumen(){
+  const selDays=DAYS.filter((_,i)=>sel[i]);
+  const total=selDays.reduce((s,d)=>s+d.amt,0);
+  document.getElementById('resumen-dias').textContent=selDays.map(d=>d.date).join(', ');
+  document.getElementById('resumen-trx').textContent=selDays.length+' día'+(selDays.length!==1?'s':'');
+  document.getElementById('resumen-total').textContent=fmtARS(total);
+  document.getElementById('ok-dias').textContent=selDays.map(d=>d.date).join(', ');
+  document.getElementById('ok-total').textContent=fmtARS(total);
+  let acred='';
+  selDays.forEach(d=>{acred+=`<div class="card-row"><span style="color:#666">${d.date}</span><span>${fmtARS(d.amt)}</span></div>`;});
+  document.getElementById('resumen-acred').innerHTML=acred;
+}
+
+let cur='0';
+const allScreens=['s0','shist','s1','s2','s3','s4'];
+const allPills=['pill0','pillhist','pill1','pill2','pill3','pill4'];
+
+function go(n){
+  allScreens.forEach(id=>{const el=document.getElementById(id);if(el)el.classList.remove('active');});
+  allPills.forEach(id=>{const el=document.getElementById(id);if(el)el.style.fontWeight='';});
+  cur=n;
+  const screenId=n===0?'s0':n==='hist'?'shist':'s'+n;
+  const pillId=n==='hist'?'pillhist':'pill'+n;
+  const el=document.getElementById(screenId);
+  if(el)el.classList.add('active');
+  const p=document.getElementById(pillId);
+  if(p)p.style.fontWeight='600';
+  if(n===1){const sb=document.getElementById('sb1');if(sb)sb.innerHTML=mkBar(1);}
+  if(n===2){const sb=document.getElementById('sb2');if(sb)sb.innerHTML=mkBar(2);}
+  if(n===3){updateResumen();const sb=document.getElementById('sb3');if(sb)sb.innerHTML=mkBar(3);}
+  if(n===4){const sb=document.getElementById('sb4');if(sb)sb.innerHTML=mkBar(4);}
+}
+
+function selMay(n){
+  document.getElementById('mc1').classList.remove('selected');
+  document.getElementById('mc2').classList.remove('selected');
+  document.getElementById('r1').classList.remove('checked');
+  document.getElementById('r2').classList.remove('checked');
+  document.getElementById('mc'+n).classList.add('selected');
+  document.getElementById('r'+n).classList.add('checked');
+}
+
+function confirmar(){
+  const t=document.getElementById('token-field').value;
+  if(!t){document.getElementById('token-field').style.borderColor='#cc3333';return;}
+  go(4);
+}
+
+function showTab(tab){
+  document.getElementById('tab-hist').classList.toggle('active',tab==='hist');
+  document.getElementById('tab-nueva').classList.toggle('active',tab==='nueva');
+  document.getElementById('panel-hist').style.display=tab==='hist'?'block':'none';
+  document.getElementById('panel-nueva').style.display=tab==='nueva'?'block':'none';
+}
+
+go(0);
+document.getElementById('pill0').style.fontWeight='600';
+updateDayUI();
+</script>
